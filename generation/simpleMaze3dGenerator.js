@@ -4,30 +4,53 @@ export default class SimpleMaze3dGenerator extends Maze3DGenerator {
   createMaze() {
     const start = this.#pickRandomCell();
     const target = this.#pickRandomCell();
-    const directions = [
-      [0, 0, 1],
-      [0, 0, -1],
-      [0, 1, 0],
-      [0, -1, 0],
-      [1, 0, 0],
-      [-1, 0, 0],
-    ];
+    console.log(start);
+    console.log(target);
 
-    let maze = this.generate(this.maze.floors, this.maze.size, start, target);
-    let step = directions[this.#randomInt(directions.length)];
+    let maze = this.generate(this.maze.size, this.maze.floors, start, target);
+    let step;
+    let steps = [];
+    let currLoc = start;
+    let newLoc = maze.location;
 
-    // Create the path between the target and the start
-    // for (let i = 0; i < this.maze.floors; i++) {
-    //   for (let j = 0; j < this.maze.size; j++) {
-    //     for (let k = 0; k < this.maze.size; k++) {
-    //       this.maze.maze[i][j][k].walls = this.#randomWalls();
-    //     }
-    //   }
-    // }
-    console.log(this.maze.location);
-    while(start.floor !== target.floor && start.row !== target.row && start.col !== target.col) {
-      let currLoc = this.maze.location
+    if (start.floor - target.floor < 0) {
+      for (let i = 0; i < target.floor - start.floor; i++)
+        steps.push([1, 0, 0]);
     }
+    if (start.floor - target.floor > 0) {
+      for (let i = 0; i < start.floor - target.floor; i++)
+        steps.push([-1, 0, 0]);
+    }
+    if (start.row - target.row > 0) {
+      for (let i = 0; i < start.row - target.row; i++) steps.push([0, -1, 0]);
+    }
+    if (start.row - target.row < 0) {
+      for (let i = 0; i < target.row - start.row; i++) steps.push([0, 1, 0]);
+    }
+    if (start.col - target.col < 0) {
+      for (let i = 0; i < target.col - start.col; i++) steps.push([0, 0, 1]);
+    }
+    if (start.col - target.col > 0) {
+      for (let i = 0; i < start.col - target.col; i++) steps.push([0, 0, -1]);
+    }
+    console.log(steps);
+
+    do {
+      step = steps[this.#randomInt(steps.length)];
+      console.log(step);
+
+      newLoc =
+        maze.maze[currLoc.floor + step[0]][currLoc.row + step[1]][
+          currLoc.col + step[2]
+        ];
+      console.log(newLoc);
+      this.#breakWall(currLoc, newLoc);
+      currLoc = newLoc;
+      const index = steps.indexOf(step);
+      steps.splice(index, 1);
+    } while (steps.length)
+    maze.maze[start.floor][start.row][start.col] = start
+    return maze;
   }
 
   /**
@@ -59,8 +82,42 @@ export default class SimpleMaze3dGenerator extends Maze3DGenerator {
     return walls;
   }
 
-  #breakWall(start) {
-    const numOfWalls = 6;
-    const wallToBreak = this.#randomInt(numOfWalls);
+  #breakWall(currLoc, newLoc) {
+    if (currLoc.floor < newLoc.floor) {
+      currLoc.walls = [false, true, true, true, true, true];
+      newLoc.walls = [true, false, true, true, true, true];
+    }
+    if (currLoc.floor > newLoc.floor) {
+      newLoc.walls = [false, true, true, true, true, true];
+      currLoc.walls = [true, false, true, true, true, true];
+    }
+    if (currLoc.row > newLoc.row) {
+      newLoc.walls = [true, true, false, true, true, true];
+      currLoc.walls = [true, true, true, true, false, true];
+    }
+    if (currLoc.row < newLoc.row) {
+      currLoc.walls = [true, true, false, true, true, true];
+      newLoc.walls = [true, true, true, true, false, true];
+    }
+    if (currLoc.col < newLoc.col) {
+      currLoc.walls = [true, true, true, false, true, true];
+      newLoc.walls = [true, true, true, true, true, false];
+    }
+    if (currLoc.col > newLoc.col) {
+      newLoc.walls = [true, true, true, false, true, true];
+      currLoc.walls = [true, true, true, true, true, false];
+    }
+  }
+
+  #isSafe(maze, floor, row, col) {
+    return (
+      row >= 0 &&
+      row < maze.size &&
+      col >= 0 &&
+      col < maze.size &&
+      floor >= 0 &&
+      floor < maze.floors &&
+      maze.maze[floor][row][col]
+    );
   }
 }

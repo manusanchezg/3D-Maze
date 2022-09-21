@@ -13,6 +13,10 @@ export default class Cell {
   set walls(walls) {
     this.#walls = walls;
   }
+
+  breakWall(index) {
+    this.walls[index] = false
+  }
 }
 
 // Is it better to pass the booleans of the walls as a parameter,

@@ -4,14 +4,12 @@ export default class SimpleMaze3dGenerator extends Maze3DGenerator {
   createMaze() {
     const start = this.#pickRandomCell();
     const target = this.#pickRandomCell();
-    console.log(start);
-    console.log(target);
 
     let maze = this.generate(this.maze.size, this.maze.floors, start, target);
-    let step;
     let steps = [];
     let currLoc = start;
     let newLoc = maze.location;
+    let step;
 
     if (start.floor - target.floor < 0) {
       for (let i = 0; i < target.floor - start.floor; i++)
@@ -33,22 +31,21 @@ export default class SimpleMaze3dGenerator extends Maze3DGenerator {
     if (start.col - target.col > 0) {
       for (let i = 0; i < start.col - target.col; i++) steps.push([0, 0, -1]);
     }
-    console.log(steps);
 
     do {
       step = steps[this.#randomInt(steps.length)];
-      console.log(step);
 
       newLoc =
         maze.maze[currLoc.floor + step[0]][currLoc.row + step[1]][
           currLoc.col + step[2]
         ];
-      console.log(newLoc);
       this.#breakWall(currLoc, newLoc);
       currLoc = newLoc;
+
       const index = steps.indexOf(step);
       steps.splice(index, 1);
     } while (steps.length)
+
     maze.maze[start.floor][start.row][start.col] = start
     return maze;
   }
@@ -70,16 +67,6 @@ export default class SimpleMaze3dGenerator extends Maze3DGenerator {
    */
   #randomInt(range) {
     return Math.floor(Math.random() * range);
-  }
-
-  #randomWalls() {
-    const wall = [true, false];
-    let walls = new Array(6);
-
-    for (let i = 0; i < walls.length; i++) {
-      walls[i] = wall[Math.round(Math.random())];
-    }
-    return walls;
   }
 
   #breakWall(currLoc, newLoc) {
@@ -107,17 +94,5 @@ export default class SimpleMaze3dGenerator extends Maze3DGenerator {
       newLoc.walls = [true, true, true, false, true, true];
       currLoc.walls = [true, true, true, true, true, false];
     }
-  }
-
-  #isSafe(maze, floor, row, col) {
-    return (
-      row >= 0 &&
-      row < maze.size &&
-      col >= 0 &&
-      col < maze.size &&
-      floor >= 0 &&
-      floor < maze.floors &&
-      maze.maze[floor][row][col]
-    );
   }
 }

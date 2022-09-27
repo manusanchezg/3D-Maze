@@ -1,5 +1,9 @@
 import Maze3DGenerator from "./maze3dGenerator.js";
 
+/**
+ * Uses the shortest path to the target, and
+ * then shuffles the moves to the one
+ */
 export default class SimpleMaze3dGenerator extends Maze3DGenerator {
   createMaze() {
     const start = this.#pickRandomCell();

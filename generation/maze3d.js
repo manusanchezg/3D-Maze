@@ -3,6 +3,14 @@ import Cell from "./cell.js";
 export default class Maze3d {
   #maze;
 
+  /**
+   * A representation of the Maze
+   * @param {number} size 5 by default
+   * @param {number} floors 3 by default
+   * @param {Cell} s
+   * @param {Cell} g
+   * @param {Cell} location
+   */
   constructor(size, floors, s, g, location = s) {
     this.floors = floors;
     this.size = size;
@@ -30,6 +38,50 @@ export default class Maze3d {
     return this.#maze;
   }
 
+  getNeighbours(cell) {
+    let up;
+    let down;
+    let forward;
+    let backward;
+    let left;
+    let right;
+
+    if (this.#isSafe(cell.floor + 1, cell.row, cell.col) && !cell.walls[0]) {
+      up = this.maze[cell.floor + 1][cell.row][cell.col];
+    } else up = null;
+    if (this.#isSafe(cell.floor - 1, cell.row, cell.col) && !cell.walls[1]) {
+      down = this.maze[cell.floor - 1][cell.row][cell.col];
+    } else down = null;
+    if (this.#isSafe(cell.floor, cell.row - 1, cell.col) && !cell.walls[2]) {
+      forward = this.maze[cell.floor][cell.row - 1][cell.col];
+    } else forward = null;
+    if (this.#isSafe(cell.floor, cell.row + 1, cell.col) && !cell.walls[4]) {
+      backward = this.maze[cell.floor][cell.row + 1][cell.col];
+    } else backward = null;
+    if (this.#isSafe(cell.floor, cell.row, cell.col - 1) && !cell.walls[5]) {
+      left = this.maze[cell.floor][cell.row][cell.col - 1];
+    } else left = null;
+    if (this.#isSafe(cell.floor, cell.row, cell.col + 1) && !cell.walls[3]) {
+      right = this.maze[cell.floor][cell.row][cell.col + 1];
+    } else right = null;
+
+    return [up, down, forward, right, backward, left];
+  }
+
+  #isSafe(floor, row, col) {
+    return (
+      row >= 0 &&
+      row < this.size &&
+      col >= 0 &&
+      col < this.size &&
+      floor >= 0 &&
+      floor < this.floors &&
+      this.maze[floor][row][col]
+    );
+  }
+  /**
+   * A console view of the maze
+   */
   // toString() {
   //   let toPrint = "";
   //   const upArrow = "\u{2191}";

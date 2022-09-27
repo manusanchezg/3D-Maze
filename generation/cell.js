@@ -1,6 +1,19 @@
 export default class Cell {
   #walls;
 
+  /**
+   * It represents every cell in the maze
+   * with his walls
+   * @param {boolean} up 
+   * @param {boolean} down 
+   * @param {boolean} forward 
+   * @param {boolean} right 
+   * @param {boolean} backward 
+   * @param {boolean} left 
+   * @param {number} floor 
+   * @param {number} row 
+   * @param {number} col 
+   */
   constructor(up, down, forward, right, backward, left, floor, row, col) {
     this.#walls = [up, down, forward, right, backward, left];
     this.floor = floor;

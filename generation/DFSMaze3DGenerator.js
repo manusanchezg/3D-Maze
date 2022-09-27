@@ -1,5 +1,8 @@
 import Maze3DGenerator from "./maze3dGenerator.js";
 
+/**
+ * It creates a Maze3D using the Depth-First-Search Algorithm
+ */
 export default class DFSMaze3DGenerator extends Maze3DGenerator {
   createMaze() {
     const start = this.#pickRandomCell();
@@ -58,7 +61,15 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
   #randomInt(range) {
     return Math.floor(Math.random() * range);
   }
-
+  /**
+   * Checks whether the location is within
+   * the boundaries of the maze
+   * @param {Maze3d} maze 
+   * @param {number} floor 
+   * @param {number} row 
+   * @param {number} col 
+   * @returns 
+   */
   #isSafe(maze, floor, row, col, visited) {
     return (
       row >= 0 &&
@@ -72,6 +83,12 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
     );
   }
 
+    /**
+   * Breaks the wall between the Current Location (currLoc)
+   * and the location you want to go (newLoc)
+   * @param {Cell} currLoc 
+   * @param {Cell} newLoc 
+   */
   #breakWall(currLoc, newLoc) {
     if (currLoc.floor < newLoc.floor) {
       currLoc.breakWall(0);

@@ -1,5 +1,10 @@
+import Cell from "./cell.js";
+import Maze3d from "./maze3d.js";
 import Maze3DGenerator from "./maze3dGenerator.js";
 
+/**
+ * A 3D Maze Generator using the Aldous-Broder Algorithm
+ */
 export default class ABMaze3DGenerator extends Maze3DGenerator {
   createMaze() {
     const start = this.#pickRandomCell();
@@ -15,7 +20,6 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
     ];
 
     let cells = new Set();
-
     // Filling the cells with the position of each cell in the maze
     for (let i = 0; i < maze.floors; i++) {
       for (let j = 0; j < maze.size; j++) {
@@ -30,6 +34,7 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
 
     let visited = new Set();
     visited.add([randomCell.floor, randomCell.row, randomCell.col].toString());
+    cells.delete([randomCell.floor, randomCell.row, randomCell.col].toString());
 
     // While cells has an element, it'll choose a random neighbour
     // check if it's not visited, and then added to visited and delete it from cells
@@ -41,13 +46,18 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
 
       if (this.#isSafe(maze, newFloor, newRow, newCol)) {
         neighbour = maze.maze[newFloor][newRow][newCol];
-        if (!visited.has([neighbour.floor, neighbour.row, neighbour.col].toString())) {
+        if (
+          !visited.has(
+            [neighbour.floor, neighbour.row, neighbour.col].toString()
+          )
+        ) {
           this.#breakWall(randomCell, neighbour);
-          visited.add([neighbour.floor, neighbour.row, neighbour.col].toString());
-          cells.delete(
-            [randomCell.floor, randomCell.row, randomCell.col].toString()
+          visited.add(
+            [neighbour.floor, neighbour.row, neighbour.col].toString()
           );
-          console.log(cells);
+          cells.delete(
+            [neighbour.floor, neighbour.row, neighbour.col].toString()
+          );
         }
       }
       randomCell = neighbour;
@@ -71,6 +81,12 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
     return Math.floor(Math.random() * range);
   }
 
+  /**
+   * Breaks the wall between the Current Location (currLoc)
+   * and the location you want to go (newLoc)
+   * @param {Cell} currLoc 
+   * @param {Cell} newLoc 
+   */
   #breakWall(currLoc, newLoc) {
     if (currLoc.floor < newLoc.floor) {
       currLoc.breakWall(0);
@@ -97,6 +113,15 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
       currLoc.breakWall(5);
     }
   }
+  /**
+   * Checks whether the location is within
+   * the boundaries of the maze
+   * @param {Maze3d} maze 
+   * @param {number} floor 
+   * @param {number} row 
+   * @param {number} col 
+   * @returns 
+   */
   #isSafe(maze, floor, row, col) {
     return (
       row >= 0 &&

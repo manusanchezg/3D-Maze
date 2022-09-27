@@ -1,5 +1,8 @@
 import Maze3D from "./maze3d.js"
 
+/**
+ * Abstract Class for generating a Maze
+ */
 export default class Maze3DGenerator {
   constructor() {
     if (this.constructor === Maze3DGenerator)

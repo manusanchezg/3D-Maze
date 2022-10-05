@@ -43,6 +43,7 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
         currLoc = stack.pop();
       }
     }
+    maze.maze[start.floor][start.row][start.col] = start
     return maze;
   }
 
@@ -56,7 +57,7 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
 
   /**
    * @param {number} range
-   * @returns a random integer between [0, range + 1)
+   * @returns a random integer between [0, range)
    */
   #randomInt(range) {
     return Math.floor(Math.random() * range);
@@ -115,12 +116,4 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
       currLoc.breakWall(5);
     }
   }
-
-  //   #areEqual(cell1, cell2) {
-  //     return (
-  //       cell1.floor === cell2.floor &&
-  //       cell1.row === cell2.row &&
-  //       cell1.col === cell2.col
-  //     );
-  //   }
 }

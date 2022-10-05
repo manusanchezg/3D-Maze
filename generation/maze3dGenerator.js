@@ -19,6 +19,5 @@ export default class Maze3DGenerator {
     this.generate(this.maze.size, this.maze.floors)
     let last = Date.now()
     return `Running time: ${last - first} ms`
-
   }
 }

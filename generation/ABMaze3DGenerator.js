@@ -62,6 +62,7 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
       }
       randomCell = neighbour;
     }
+    maze.maze[start.floor][start.row][start.col] = start
     return maze;
   }
 

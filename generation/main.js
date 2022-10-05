@@ -29,6 +29,8 @@ import Maze3DGenerator from "./maze3dGenerator.js";
 // console.log(ABMaze.createMaze())
 
 //! BFS Search Algorithm
-// const DFSMaze = new DFSMaze3DGenerator()
-// DFSMaze.generate()
-// console.log(DFSMaze.createMaze())
+const DFSMaze = new DFSMaze3DGenerator()
+DFSMaze.generate()
+const maze = DFSMaze.createMaze()
+
+export { maze }

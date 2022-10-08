@@ -1,24 +1,45 @@
 import Searchable from "../searchable.js";
-import Maze3d from "../../generation/maze3d.js";
-import Cell from "../../generation/cell.js";
 import Node from "../node.js";
 
 export default class BFSAlgorithm extends Searchable {
   /**
    *
-   * @param {Maze3d} graph
-   * @param {Cell} startNode
-   * @param {Cell} goalNode
+   * @param {Node} goalNode
    */
-  constructor(graph, startNode, goalNode) {
-    this.startNode = new Node(startNode, graph.getNeighbours(startNode));
-    this.goalNode = new Node(goalNode); // Target
-    this.graph = graph; // The maze itself
+  constructor(graph, goalNode) {
+    super(graph, goalNode);
     this.frontier = []; // FIFO unshift() & pop()
-    this.explored = new Set();
+    this.explored = new Map();
     this.path = []; // push()
   }
-  BFS() {
-    
+  /**
+   *
+   * @param {Node} start
+   * @param {Node} target
+   */
+  search(start, target) {
+    this.path.push(start);
+    this.frontier.push(start);
+
+    while (this.frontier.length > 0) {
+      const currNode = this.frontier.pop();
+
+      if (currNode.state === target.state) return this.path;
+
+      this.explored.set(currNode.state, currNode);
+
+      for (const child of currNode.actions) {
+        if (!this.explored.has(child.state)) {
+          for (let i = 0; i < this.frontier.length; i++) {
+            const el = this.frontier[i];
+            if (child.state !== el.state) {
+              this.frontier.push(child);
+            }
+          }
+        }
+      }
+      this.path.push(currNode);
+    }
+    return this.path
   }
 }

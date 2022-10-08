@@ -1,25 +1,43 @@
+#body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgb(161, 136, 166);
+  background: linear-gradient(
+    0deg,
+    rgba(161, 136, 166, 1) 11%,
+    rgba(115, 83, 119, 1) 80%
+  );
+  color: #9DA2AB;
+}
+
 #container {
-    border-collapse: collapse;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
+  border-collapse: collapse;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .cell {
-    width: 50px;
-    height: 50px;
-    text-align: center;
-    margin: 5px;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  color: black;
 }
 
 .hidden {
-    display: none;
-    
+  display: none;
 }
 
 #buttons button {
-    width: 70px;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
+  width: 70px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+/*! Is this okay? */
+#buttons button img {
+  pointer-events: none;
 }

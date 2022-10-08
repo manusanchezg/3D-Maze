@@ -74,29 +74,35 @@ export default class SimpleMaze3dGenerator extends Maze3DGenerator {
   }
 
   #breakWall(currLoc, newLoc) {
+    // moving up break currLoc wall up
+    // break newLoc wall down
     if (currLoc.floor < newLoc.floor) {
-      currLoc.walls = [false, true, true, true, true, true];
-      newLoc.walls = [true, false, true, true, true, true];
+      newLoc.breakWall(1);
+      currLoc.breakWall(0);
     }
+    // moving down
     if (currLoc.floor > newLoc.floor) {
-      newLoc.walls = [false, true, true, true, true, true];
-      currLoc.walls = [true, false, true, true, true, true];
+      newLoc.breakWall(0);
+      currLoc.breakWall(1);
     }
+    // moving forward
     if (currLoc.row > newLoc.row) {
-      newLoc.walls = [true, true, false, true, true, true];
-      currLoc.walls = [true, true, true, true, false, true];
+      newLoc.breakWall(4);
+      currLoc.breakWall(2);
     }
+    // moving backward
     if (currLoc.row < newLoc.row) {
-      currLoc.walls = [true, true, false, true, true, true];
-      newLoc.walls = [true, true, true, true, false, true];
+      newLoc.breakWall(2);
+      currLoc.breakWall(4);
     }
+    // moving right
     if (currLoc.col < newLoc.col) {
-      currLoc.walls = [true, true, true, false, true, true];
-      newLoc.walls = [true, true, true, true, true, false];
+      newLoc.breakWall(5);
+      currLoc.breakWall(3);
     }
     if (currLoc.col > newLoc.col) {
-      newLoc.walls = [true, true, true, false, true, true];
-      currLoc.walls = [true, true, true, true, true, false];
+      newLoc.breakWall(3);
+      currLoc.breakWall(5);
     }
   }
 }

@@ -88,26 +88,32 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
    * @param {Cell} currLoc 
    * @param {Cell} newLoc 
    */
-  #breakWall(currLoc, newLoc) {
+   #breakWall(currLoc, newLoc) {
+    // moving up break currLoc wall up
+    // break newLoc wall down
     if (currLoc.floor < newLoc.floor) {
-      currLoc.breakWall(0);
       newLoc.breakWall(1);
+      currLoc.breakWall(0);
     }
+    // moving down
     if (currLoc.floor > newLoc.floor) {
       newLoc.breakWall(0);
       currLoc.breakWall(1);
     }
+    // moving forward
     if (currLoc.row > newLoc.row) {
+      newLoc.breakWall(4);
+      currLoc.breakWall(2);
+    }
+    // moving backward
+    if (currLoc.row < newLoc.row) {
       newLoc.breakWall(2);
       currLoc.breakWall(4);
     }
-    if (currLoc.row < newLoc.row) {
-      currLoc.breakWall(2);
-      newLoc.breakWall(4);
-    }
+    // moving right
     if (currLoc.col < newLoc.col) {
-      currLoc.breakWall(3);
       newLoc.breakWall(5);
+      currLoc.breakWall(3);
     }
     if (currLoc.col > newLoc.col) {
       newLoc.breakWall(3);

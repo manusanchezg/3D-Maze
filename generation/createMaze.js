@@ -30,7 +30,7 @@ import Maze3DGenerator from "./maze3dGenerator.js";
 
 //! BFS Search Algorithm
 const DFSMaze = new DFSMaze3DGenerator()
-DFSMaze.generate()
+DFSMaze.generate(10, 4)
 const maze = DFSMaze.createMaze()
 
 export { maze }

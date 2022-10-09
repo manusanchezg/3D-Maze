@@ -48,17 +48,20 @@ export default class Board {
           mazeCell.floor === this.maze.location.floor &&
           mazeCell.row === this.maze.location.row &&
           mazeCell.col === this.maze.location.col
-        ) {
+        )
           cell.appendChild(this.player.player);
-          cell.id = "playerLocation";
-        }
         this.container.appendChild(cell);
       }
     }
     this.container.style.maxWidth = 54 * this.maze.size + "px";
   }
 
-  changePlayerLocation() {}
+  updatePlayersLocation(floor, row, col) {
+    // Every time a button is pressed, change the location
+    // of the player, depending on which direction you're moving
+    
+    
+  }
 
   isGameOver() {
     if (

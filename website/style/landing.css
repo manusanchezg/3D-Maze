@@ -1,0 +1,91 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+:root {
+    --title-color: #0d324d;
+    --p-color: #0d324d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    height: 97vh;
+    background: rgb(186, 159, 191);
+    background: linear-gradient(0deg,
+            rgba(186, 159, 191, 1) 6%,
+            rgba(151, 114, 156, 1) 92%);
+}
+
+#form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: "Rubik", Arial, Helvetica, sans-serif;
+}
+
+h1 {
+    font-family: "Roboto Slab", Georgia, serif;
+    font-size: 2rem;
+    color: var(--title-color);
+}
+
+#form-container div {
+    display: flex;
+    flex-direction: column;
+    color: var(--p-color);
+}
+
+#form-container label {
+    display: inline-block;
+    width: 280px;
+    margin: 10px;
+    font-size: 1.3rem;
+}
+
+#form-container input {
+    text-align: center;
+    border: none;
+    border-bottom: 2px solid var(--p-color);
+    background-color: transparent;
+    padding: 6px;
+    font-size: 1.2rem;
+    color: var(--p-color);
+    border-radius: 15px;
+    transition: 0.2s ease-out;
+}
+
+/* Chrome, Safari, Edge, Opera */
+#form-container input::-webkit-outer-spin-button,
+#form-container input::-webkit-inner-spin-button {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+#form-container input[type="number"] {
+    appearance: none;
+    -moz-appearance: textfield;
+}
+
+#form-container input:focus {
+    transform: scale(1.1);
+    outline: 2px solid var(--p-color);
+}
+
+#form-container button {
+    margin-top: 20px;
+    background-color: transparent;
+    border: 3px solid var(--p-color);
+    color: var(--p-color);
+    padding: 10px 15px;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.2s ease-out;
+}
+
+#form-container button:hover {
+    transform: scale(1.1);
+}

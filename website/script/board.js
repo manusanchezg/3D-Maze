@@ -1,4 +1,12 @@
+import Maze3d from "../../generation/maze3d.js";
+import Player from "./player.js";
+
 export default class Board {
+  /**
+   * 
+   * @param {Maze3d} maze 
+   * @param {Player} player 
+   */
   constructor(maze, player) {
     this.container = document.getElementById("container");
     this.maze = maze;
@@ -19,6 +27,7 @@ export default class Board {
         const mazeCell = this.maze.maze[floorLocation][j][k];
         const cell = document.createElement("div");
         cell.className = "cell";
+        cell.id = `${floorLocation}${j}${k}`
 
         if (!mazeCell.walls[0]) cell.textContent = upArrow;
         if (!mazeCell.walls[1]) cell.textContent = downArrow;
@@ -56,11 +65,17 @@ export default class Board {
     this.container.style.maxWidth = 54 * this.maze.size + "px";
   }
 
-  updatePlayersLocation(floor, row, col) {
+  updatePlayersLocation(floor, row, col, direction) {
     // Every time a button is pressed, change the location
     // of the player, depending on which direction you're moving
-    
-    
+    const newLoc = document.getElementById(`${floor}${row}${col}`)
+    this.maze.changeLocation(floor, row, col)
+    if(direction === "floorUpButton" || direction === "floorDownButton") {
+      this.container.innerHTML = ""
+      this.displayMaze()
+    }
+    newLoc.appendChild(this.player.player)
+    console.log("location in function update", this.maze.location)
   }
 
   isGameOver() {

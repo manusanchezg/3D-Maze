@@ -1,3 +1,4 @@
+import Cell from "./cell.js";
 import Maze3DGenerator from "./maze3dGenerator.js";
 
 /**
@@ -7,43 +8,32 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
   createMaze() {
     const start = this.#pickRandomCell();
     const target = this.#pickRandomCell();
-    let maze = this.generate(this.maze.size, this.maze.floors, start, target);
-    const DIRECTIONS = [
-      [0, 0, 1],
-      [0, 0, -1],
-      [0, 1, 0],
-      [0, -1, 0],
-      [1, 0, 0],
-      [-1, 0, 0],
-    ];
+    const maze = this.generate(this.maze.size, this.maze.floors, start, target);
 
-    let stack = [];
-    let visited = new Set();
-    let currLoc;
+    const stack = [];
+    const visited = new Set();
+    let currLoc = start;
     let newLoc;
 
     stack.push([start.floor, start.row, start.row]);
     visited.add([start.floor, start.row, start.row].toString());
 
     while (stack.length) {
-      const randomLoc = DIRECTIONS[this.#randomInt(DIRECTIONS.length)];
-      const newFloor = randomLoc[0] + start.floor;
-      const newRow = randomLoc[1] + start.row;
-      const newCol = randomLoc[2] + start.col;
-      currLoc = start;
-      
-      if (this.#isSafe(maze, newFloor, newRow, newCol, visited)) {
-          newLoc = maze.maze[newFloor][newRow][newCol];
+      const neighbours = this.#getNeighbours(currLoc, visited);
+      const neighbour = neighbours[this.#randomInt(neighbours.length)];
 
+      if (
+        !visited.has([neighbour.floor, neighbour.row, neighbour.col].toString())
+      ) {
+        newLoc = neighbour;
         this.#breakWall(currLoc, newLoc);
-        visited.add([newLoc.floor, newLoc.row, newLoc.col].toString());
+        visited.add([neighbour.floor, neighbour.row, neighbour.col].toString());
+        stack.push(newLoc);
         currLoc = newLoc;
-        stack.push(currLoc)
       } else {
         currLoc = stack.pop();
       }
     }
-    maze.maze[start.floor][start.row][start.col] = start
     return maze;
   }
 
@@ -62,16 +52,49 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
   #randomInt(range) {
     return Math.floor(Math.random() * range);
   }
+
+  /**
+   *
+   * @param {Maze3d} maze
+   * @param {Cell} cell
+   */
+  #getNeighbours(cell, visited) {
+    const neighbours = [];
+    const DIRECTIONS = [
+      [0, 0, 1],
+      [0, 0, -1],
+      [0, 1, 0],
+      [0, -1, 0],
+      [1, 0, 0],
+      [-1, 0, 0],
+    ];
+
+    for (const direction of DIRECTIONS) {
+      const newFloor = cell.floor + direction[0];
+      const newRow = cell.row + direction[1];
+      const newCol = cell.col + direction[2];
+      //I doesn't enter to the if, never
+      if (this.#isSafe(this.maze, newFloor, newRow, newCol)) {
+        if(!visited.has([newFloor, newRow, newCol])){
+          // have to finish this, check teh walls between the new cell and the current cell
+          if(this.maze[newFloor][newRow][newCol].walls[1] === cell.walls[1]) {}
+          const neighbour = this.maze.maze[newFloor][newRow][newCol];
+          neighbours.push(neighbour);
+        }
+      }
+    }
+    return neighbours;
+  }
   /**
    * Checks whether the location is within
    * the boundaries of the maze
-   * @param {Maze3d} maze 
-   * @param {number} floor 
-   * @param {number} row 
-   * @param {number} col 
-   * @returns 
+   * @param {Maze3d} maze
+   * @param {number} floor
+   * @param {number} row
+   * @param {number} col
+   * @returns
    */
-  #isSafe(maze, floor, row, col, visited) {
+  #isSafe(maze, floor, row, col) {
     return (
       row >= 0 &&
       row < maze.size &&
@@ -79,16 +102,15 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
       col < maze.size &&
       floor >= 0 &&
       floor < maze.floors &&
-      maze.maze[floor][row][col] &&
-      !visited.has([floor, row, col].toString())
+      maze.maze[floor][row][col]
     );
   }
 
-    /**
+  /**
    * Breaks the wall between the Current Location (currLoc)
    * and the location you want to go (newLoc)
-   * @param {Cell} currLoc 
-   * @param {Cell} newLoc 
+   * @param {Cell} currLoc
+   * @param {Cell} newLoc
    */
   #breakWall(currLoc, newLoc) {
     // moving up break currLoc wall up

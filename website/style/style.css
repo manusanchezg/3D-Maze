@@ -2,17 +2,20 @@
 
 #body {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-evenly;
   align-items: center;
   background: rgb(186, 159, 191);
-  background: linear-gradient(
-    0deg,
-    rgba(186, 159, 191, 1) 6%,
-    rgba(151, 114, 156, 1) 92%
-  );
+  background: linear-gradient(0deg,
+      rgba(186, 159, 191, 1) 6%,
+      rgba(151, 114, 156, 1) 92%);
   color: #9da2ab;
   font-family: 'Rubik', Arial, Helvetica, sans-serif;
+}
+
+#body header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 #title {
@@ -42,6 +45,41 @@
   border: none;
   background-color: transparent;
   cursor: pointer;
+}
+
+#forwardButton {
+  grid-area: forward;
+}
+
+#backwardButton {
+  grid-area: backward;
+}
+
+#leftButton {
+  grid-area: left;
+}
+
+#rightButton {
+  grid-area: right;
+}
+
+#floorUpButton {
+  grid-area: floorUp;
+}
+
+#floorDownButton {
+  grid-area: floorDown;
+}
+
+
+#buttons {
+  display: grid;
+  grid-template-columns: 70px 70px 70px;
+  grid-template-rows: 70px 70px 70px;
+  grid-template-areas: 
+  ". forward ."
+  "left backward right"
+  "floorUp . floorDown";
 }
 
 /*! Is this okay? */

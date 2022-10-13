@@ -9,7 +9,9 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
   createMaze() {
     const start = this.#pickRandomCell();
     const target = this.#pickRandomCell();
-    let maze = this.generate(this.maze.size, this.maze.floors, start, target);
+    const maze = this.generate(this.maze.size, this.maze.floors, start, target);
+    maze.maze[start.floor][start.row][start.col] = start
+    // console.log(start)
     const DIRECTIONS = [
       [0, 0, 1],
       [0, 0, -1],
@@ -62,7 +64,6 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
       }
       randomCell = neighbour;
     }
-    maze.maze[start.floor][start.row][start.col] = start
     return maze;
   }
 

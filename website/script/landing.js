@@ -8,5 +8,5 @@ floors.addEventListener("input", () => {
 
 
 startGame.addEventListener("click", () => {
-    location = `../index.html?floors=${floors.value}&size=${size.value}`
+    location = `pages/game.html?floors=${floors.value}&size=${size.value}`
 })

@@ -28,7 +28,7 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
         newLoc = neighbour;
         this.#breakWall(currLoc, newLoc);
         visited.add([neighbour.floor, neighbour.row, neighbour.col].toString());
-        stack.push(newLoc);
+        stack.push(...neighbours);
         currLoc = newLoc;
       } else {
         currLoc = stack.pop();
@@ -76,8 +76,6 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
       //I doesn't enter to the if, never
       if (this.#isSafe(this.maze, newFloor, newRow, newCol)) {
         if(!visited.has([newFloor, newRow, newCol])){
-          // have to finish this, check teh walls between the new cell and the current cell
-          if(this.maze[newFloor][newRow][newCol].walls[1] === cell.walls[1]) {}
           const neighbour = this.maze.maze[newFloor][newRow][newCol];
           neighbours.push(neighbour);
         }

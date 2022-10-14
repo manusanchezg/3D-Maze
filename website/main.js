@@ -15,10 +15,10 @@ const DFSMaze = new ABMaze3DGenerator();
 DFSMaze.generate(size, floors);
 const maze = DFSMaze.createMaze();
 
-const player = new Player();
+const player = new Player(maze);
 const board = new Board(maze, player);
 
-board.displayMaze();
+board.displayMaze(maze.location.floor);
 
 const buttons = document.getElementById("buttons");
 
@@ -27,34 +27,33 @@ const buttons = document.getElementById("buttons");
 const directions = new Map([
   [
     "floorUpButton",
-    [0, maze.location.floor + 1, maze.location.row, maze.location.col],
+    [0, player.floor + 1, player.row, player.col],
   ],
   [
     "floorDownButton",
-    [1, maze.location.floor - 1, maze.location.row, maze.location.col],
+    [1, player.floor - 1, player.row, player.col],
   ],
   [
     "forwardButton",
-    [2, maze.location.floor, maze.location.row - 1, maze.location.col],
+    [2, player.floor, player.row - 1, player.col],
   ],
   [
     "rightButton",
-    [3, maze.location.floor, maze.location.row, maze.location.col + 1],
+    [3, player.floor, player.row, player.col + 1],
   ],
   [
     "backwardButton",
-    [4, maze.location.floor, maze.location.row + 1, maze.location.col],
+    [4, player.floor, player.row + 1, player.col],
   ],
   [
     "leftButton",
-    [5, maze.location.floor, maze.location.row, maze.location.col - 1],
+    [5, player.floor, player.row, player.col - 1],
   ],
 ]);
 
 buttons.addEventListener("click", (e) => {
-  console.log(maze.location)
   const direction = directions.get(e.target.id);
   if (!maze.location.walls[direction[0]])
-  board.updatePlayersLocation(direction[1], direction[2], direction[3], e.target.id);
+  board.updatePlayersLocation(maze, direction[1], direction[2], direction[3], e.target.id);
   else alert("You can't move that way because there is a wall!");
 });

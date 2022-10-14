@@ -13,17 +13,18 @@ export default class Board {
     this.player = player;
   }
 
-  displayMaze() {
+  displayMaze(floorLocation) {
     const upArrow = "\u{2191}";
     const downArrow = "\u{2193}";
     const upDownArrow = "\u{2195}";
 
     const title = document.getElementById("title");
-    title.textContent = `You're in the ${this.maze.location.floor + 1}° floor`;
+    // title.textContent = `You're in the ${this.maze.location.floor + 1}° floor`;
+    title.textContent = `You're in the ${floorLocation + 1}° floor`;
 
     for (let j = 0; j < this.maze.size; j++) {
       for (let k = 0; k < this.maze.size; k++) {
-        const floorLocation = this.maze.location.floor;
+        // const floorLocation = this.maze.location.floor;
         const mazeCell = this.maze.maze[floorLocation][j][k];
         const cell = document.createElement("div");
         cell.className = "cell";
@@ -33,14 +34,14 @@ export default class Board {
         if (!mazeCell.walls[1]) cell.textContent = downArrow;
         if (!mazeCell.walls[0] && !mazeCell.walls[1])
           cell.textContent = upDownArrow;
-        if (mazeCell.walls[2]) cell.style.borderTop = "2px solid #0D324D";
-        if (mazeCell.walls[3]) cell.style.borderRight = "2px solid #0D324D";
-        if (mazeCell.walls[4]) cell.style.borderBottom = "2px solid #0D324D";
-        if (mazeCell.walls[5]) cell.style.borderLeft = "2px solid #0D324D";
-        if (!mazeCell.walls[2]) cell.style.marginTop = "2px";
-        if (!mazeCell.walls[3]) cell.style.marginRight = "2px";
-        if (!mazeCell.walls[4]) cell.style.marginBottom = "2px";
-        if (!mazeCell.walls[5]) cell.style.marginLeft = "2px";
+        if (mazeCell.walls[2]) cell.style.borderTop = "4px solid #0D324D";
+        if (mazeCell.walls[3]) cell.style.borderRight = "4px solid #0D324D";
+        if (mazeCell.walls[4]) cell.style.borderBottom = "4px solid #0D324D";
+        if (mazeCell.walls[5]) cell.style.borderLeft = "4px solid #0D324D";
+        if (!mazeCell.walls[2]) cell.style.paddingTop = "4px";
+        if (!mazeCell.walls[3]) cell.style.paddingRight = "4px";
+        if (!mazeCell.walls[4]) cell.style.paddingBottom = "4px";
+        if (!mazeCell.walls[5]) cell.style.paddingLeft = "4px";
         if (
           mazeCell.floor === this.maze.s.floor &&
           mazeCell.row === this.maze.s.row &&
@@ -62,20 +63,29 @@ export default class Board {
         this.container.appendChild(cell);
       }
     }
-    this.container.style.maxWidth = 54 * this.maze.size + "px";
+    this.container.style.maxWidth = 58 * this.maze.size + "px";
   }
-
-  updatePlayersLocation(floor, row, col, direction) {
+/**
+ * 
+ * @param {Maze3d} maze 
+ * @param {number} floor 
+ * @param {number} row 
+ * @param {number} col 
+ * @param {string} direction 
+ */
+  updatePlayersLocation(maze, floor, row, col, direction) {
     // Every time a button is pressed, change the location
     // of the player, depending on which direction you're moving
-    const newLoc = document.getElementById(`${floor}${row}${col}`)
-    this.maze.changeLocation(floor, row, col)
+    let newLoc = document.getElementById(`${floor}${row}${col}`)
+    let mazeLoc = maze.changeLocation(floor, row, col)
+
+    this.player.changePlayerLocation(floor, row, col)
     if(direction === "floorUpButton" || direction === "floorDownButton") {
       this.container.innerHTML = ""
-      this.displayMaze()
+      this.displayMaze(floor)
     }
+    mazeLoc = newLoc
     newLoc.appendChild(this.player.player)
-    console.log("location in function update", this.maze.location)
   }
 
   isGameOver() {

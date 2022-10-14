@@ -11,12 +11,12 @@ export default class Maze3d {
    * @param {Cell} g
    * @param {Cell} location
    */
-  constructor(size, floors, s, g, location = s) {
+  constructor(size, floors, s, g) {
     this.floors = floors;
     this.size = size;
     this.s = s;
     this.g = g;
-    this.location = location;
+    this.location = s;
 
     this.#maze = new Array(floors);
 

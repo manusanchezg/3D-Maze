@@ -76,7 +76,7 @@ header {
 #buttons {
   display: grid;
   grid-template-columns: 70px 70px 70px;
-  grid-template-rows: 70px 70px 70px;
+  grid-template-rows: 70px 70px 90px;
   grid-template-areas: 
   ". forward ."
   "left backward right"
@@ -86,4 +86,20 @@ header {
 /*! Is this okay? */
 #buttons button img {
   pointer-events: none;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+} 
+
+#resetLocation {
+  border-radius: 10px;
+  padding: 1rem 2rem;
+  border: 2px solid #9da2ab;
+  background-color: transparent;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-top: 10px;
 }

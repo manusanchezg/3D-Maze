@@ -5,13 +5,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/favicon.svg" type="image/x-icon" />
-    <link rel="stylesheet" href="style/landing.css">
+    <link rel="stylesheet" href="style/landing.css" />
     <title>Maze 3D</title>
   </head>
   <body>
     <section id="form-container">
-        <h1>Welcome to the 3D Maze game!</h1>
+      <h1>Welcome to the 3D Maze game!</h1>
       <div>
+        <label for="userName">Your Name: </label>
+        <input
+          type="text"
+          required
+          placeholder="Your Name..."
+          id="userName"
+          pattern="[a-zA-Z+]"
+        />
         <label for="numOfFloors">Choose the number of floors:</label>
         <input
           type="number"
@@ -22,10 +30,23 @@
       </div>
       <div>
         <label for="sizeOfMaze">Choose size of maze:</label>
-        <input type="number" placeholder="Size of maze..." id="sizeOfMaze" value="5">
-    </div>
-    <button id="startGame">Start Game!</button>
+        <input
+          type="number"
+          placeholder="Size of maze..."
+          id="sizeOfMaze"
+          value="5"
+        />
+      </div>
+      <button id="checkLocalStortage">Start Game!</button>
     </section>
+    <div id="modal">
+      <button id="closeModal" type="button">X</button>
+      <div>
+        <h2>You have a previous game, do you want to keep playing?</h2>
+        <button type="button" id="startGame">New Game</button
+        ><button type="button" id="keepPlaying">Keep Playing</button>
+      </div>
+    </div>
     <script src="script/landing.js"></script>
   </body>
 </html>

@@ -5,14 +5,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../style/style.css" />
-    <link rel="shortcut icon" href="../assets/favicon.svg" type="image/x-icon" />
+    <link
+      rel="shortcut icon"
+      href="../assets/favicon.svg"
+      type="image/x-icon"
+    />
     <title>3D Maze</title>
   </head>
   <body>
-      <header>
-        <h1 id="title"></h1>
-        <div id="container"></div>
-      </header>
+    <header>
+      <h1 id="title"></h1>
+      <div id="container"></div>
+    </header>
+    <div class="buttons-container">
       <div id="buttons">
         <button id="forwardButton" type="button">
           <img src="../assets/up-arrow.svg" alt="arrow pointing up" /></button
@@ -22,7 +27,10 @@
             alt="arrow pointing right"
           /></button
         ><button id="backwardButton" type="button">
-          <img src="../assets/down-arrow.svg" alt="arrow pointing down" /></button
+          <img
+            src="../assets/down-arrow.svg"
+            alt="arrow pointing down"
+          /></button
         ><button id="leftButton" type="button">
           <img src="../assets/left-arrow.svg" alt="arrow pointing left" />
         </button>
@@ -38,6 +46,9 @@
           />
         </button>
       </div>
+      <button type="button" id="resetLocation">Reset location</button>
+    </div>
+
     <script type="module" src="../main.js"></script>
   </body>
 </html>

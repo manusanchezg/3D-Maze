@@ -45,6 +45,14 @@ export default class Maze3d {
 
     return this.location;
   }
+
+  toJSON() {
+    return {
+      maze : this.#maze,
+      floors : this.floors,
+      size : this.size,
+    }
+  }
   /**
    * A console view of the maze
    */

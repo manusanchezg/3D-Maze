@@ -8,12 +8,14 @@ const queryString = location.search;
 const urlParams = new URLSearchParams(queryString);
 const floors = urlParams.get("floors");
 const size = urlParams.get("size");
+const username = urlParams.get("username")
 
 const DFSMaze = new ABMaze3DGenerator();
 // const DFSMaze = new DFSMaze3DGenerator();
 // const DFSMaze = new SimpleMaze3dGenerator();
 DFSMaze.generate(size, floors);
 const maze = DFSMaze.createMaze();
+localStorage.setItem(username, JSON.stringify(maze))
 
 const player = new Player(maze);
 const board = new Board(maze, player);
@@ -57,3 +59,12 @@ buttons.addEventListener("click", (e) => {
   board.updatePlayersLocation(maze, direction[1], direction[2], direction[3], e.target.id);
   else alert("You can't move that way because there is a wall!");
 });
+
+
+const resetBtn = document.getElementById("resetLocation")
+
+resetBtn.addEventListener("click", () => {
+  const s = maze.s
+  const start = document.getElementById(`${s.floor}${s.row}${s.col}`)
+  start.appendChild(player.player)
+})

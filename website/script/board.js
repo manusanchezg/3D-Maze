@@ -3,7 +3,6 @@ import Player from "./player.js";
 
 export default class Board {
   /**
-   * 
    * @param {Maze3d} maze 
    * @param {Player} player 
    */
@@ -19,12 +18,10 @@ export default class Board {
     const upDownArrow = "\u{2195}";
 
     const title = document.getElementById("title");
-    // title.textContent = `You're in the ${this.maze.location.floor + 1}° floor`;
     title.textContent = `You're in the ${floorLocation + 1}° floor`;
 
     for (let j = 0; j < this.maze.size; j++) {
       for (let k = 0; k < this.maze.size; k++) {
-        // const floorLocation = this.maze.location.floor;
         const mazeCell = this.maze.maze[floorLocation][j][k];
         const cell = document.createElement("div");
         cell.className = "cell";

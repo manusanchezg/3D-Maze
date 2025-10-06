@@ -42,6 +42,7 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
     // check if it's not visited, and then added to visited and delete it from cells
     while (cells.size) {
       const randomDir = DIRECTIONS[this.#randomInt(DIRECTIONS.length)];
+      // console.log(randomCell, randomDir);
       const newFloor = randomCell.floor + randomDir[0];
       const newRow = randomCell.row + randomDir[1];
       const newCol = randomCell.col + randomDir[2];
@@ -61,8 +62,9 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
             [neighbour.floor, neighbour.row, neighbour.col].toString()
           );
         }
+        randomCell = neighbour; // Solo actualiza si neighbour es válido
       }
-      randomCell = neighbour;
+      // Si no es seguro, randomCell no cambia
     }
     return maze;
   }

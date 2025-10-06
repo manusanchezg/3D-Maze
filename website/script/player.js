@@ -13,4 +13,12 @@ export default class Player {
     this.row = newRow;
     this.col = newCol;
   }
+
+  get location() {
+    return {
+      floor: this.floor,
+      row: this.row,
+      col: this.col,
+    };
+  }
 }

@@ -71,18 +71,31 @@ export default class Board {
  * @param {string} direction 
  */
   updatePlayersLocation(maze, floor, row, col, direction) {
-    // Every time a button is pressed, change the location
-    // of the player, depending on which direction you're moving
-    let newLoc = document.getElementById(`${floor}${row}${col}`)
-    let mazeLoc = maze.changeLocation(floor, row, col)
+    // Actualiza primero la posición en el objeto maze
+    maze.location.floor = floor;
+    maze.location.row = row;
+    maze.location.col = col;
 
-    this.player.changePlayerLocation(floor, row, col)
-    if(direction === "floorUpButton" || direction === "floorDownButton") {
-      this.container.innerHTML = ""
-      this.displayMaze(floor)
+    // Luego actualiza la posición del jugador
+    this.player.changePlayerLocation(floor, row, col);
+    console.log('players location: ',this.player.location);
+
+    let newLoc = document.getElementById(`${floor}${row}${col}`);
+
+    // Si el jugador se mueve a un piso diferente, redibuja el laberinto
+
+    if (direction === "floorUpButton" || direction === "floorDownButton") {
+      this.container.innerHTML = "";
+      this.displayMaze(floor);
+      newLoc = document.getElementById(`${floor}${row}${col}`); // Re-obtener el elemento después de redibujar
     }
-    mazeLoc = newLoc
-    newLoc.appendChild(this.player.player)
+
+    newLoc.appendChild(this.player.player);
+  }
+
+  canMove(directionIndex) {
+    const cell = this.maze.maze[this.player.floor][this.player.row][this.player.col];
+    return !cell.walls[directionIndex];
   }
 
   isGameOver() {

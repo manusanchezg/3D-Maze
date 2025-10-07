@@ -1,11 +1,11 @@
 export default class Player {
-  constructor(maze) {
+  constructor(initialLocation) {
     this.player = document.createElement("img");
     this.player.src = "../assets/player.svg";
     this.player.style.width = "45px";
-    this.floor = maze.location.floor;
-    this.row = maze.location.row;
-    this.col = maze.location.col;
+    this.floor = initialLocation.floor;
+    this.row = initialLocation.row;
+    this.col = initialLocation.col;
   }
 
   changePlayerLocation(newFloor, newRow, newCol) {

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Congratulations!</title>
+    <link rel="stylesheet" href="../style/win.css" />
+    <link rel="shortcut icon" href="../assets/favicon.svg" type="image/x-icon" />
+  </head>
+  <body>
+    <div class="win-container">
+      <h1 class="animated-title">🎉 ¡Felicitaciones!</h1>
+      <p class="animated-text">Has llegado al objetivo y completado el laberinto 3D.</p>
+      <a href="../index.html" class="win-btn">Volver al inicio</a>
+    </div>
+    <div id="emoji-container"></div>
+    <script>
+      // Animación de emojis volando
+      const emojis = ["🎉", "🏆", "✨", "🥳", "🎊"];
+      function launchEmoji() {
+        const emoji = document.createElement("span");
+        emoji.className = "flying-emoji";
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        emoji.style.left = Math.random() * 90 + "vw";
+        emoji.style.animationDuration = (1.5 + Math.random() * 1.5) + "s";
+        document.getElementById("emoji-container").appendChild(emoji);
+        setTimeout(() => emoji.remove(), 2000);
+      }
+      setInterval(launchEmoji, 350);
+    </script>
+  </body>
+</html>

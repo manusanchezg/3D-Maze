@@ -5,6 +5,7 @@ const username = document.getElementById("userName");
 const checkStorageBtn = document.getElementById("checkLocalStortage");
 const modal = document.getElementById("modal");
 const keepPlaying = document.getElementById("keepPlaying");
+const mazeTypeSelect = document.getElementById("mazeType");
 let maze;
 
 floors.addEventListener("input", (e) => {
@@ -27,7 +28,8 @@ function checkValidity(e) {
 
 checkStorageBtn.addEventListener("click", () => {
   if (!localStorage.getItem(username.value)) {
-    location = `pages/game.html?floors=${floors.value}&size=${size.value}&username=${username.value}`;
+    console.log(mazeTypeSelect.value);
+    location = `pages/game.html?floors=${floors.value}&size=${size.value}&username=${username.value}&mazeType=${mazeTypeSelect.value}`;
   } else {
     modal.style.display = "inherit";
     maze = localStorage.getItem(username.value);
@@ -35,7 +37,7 @@ checkStorageBtn.addEventListener("click", () => {
 });
 
 startGame.addEventListener("click", () => {
-  location = `pages/game.html?floors=${floors.value}&size=${size.value}&username=${username.value}`;
+  location = `pages/game.html?floors=${floors.value}&size=${size.value}&username=${username.value}&mazeType=${mazeTypeSelect.value}`;
 });
 
 keepPlaying.addEventListener("click", () => {

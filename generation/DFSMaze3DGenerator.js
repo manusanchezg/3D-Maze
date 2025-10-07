@@ -5,42 +5,48 @@ import Maze3DGenerator from "./maze3dGenerator.js";
  * It creates a Maze3D using the Depth-First-Search Algorithm
  */
 export default class DFSMaze3DGenerator extends Maze3DGenerator {
-  createMaze() {
-    const start = this.#pickRandomCell();
-    const target = this.#pickRandomCell();
-    const maze = this.generate(this.maze.size, this.maze.floors, start, target);
+  get start() {
+    return this.maze.s;
+  }
+  createMaze(size, floors) {
+    const maze = this.generate(size, floors);
+    const start = this.#pickRandomCell(size, floors);
+    const target = this.#pickRandomCell(size, floors);
+
+    maze.setStart(start);
+    maze.setTarget(target);
 
     const stack = [];
     const visited = new Set();
-    let currLoc = start;
-    let newLoc;
 
-    stack.push([start.floor, start.row, start.row]);
-    visited.add([start.floor, start.row, start.row].toString());
+    stack.push(start);
+    visited.add(this.#cellKey(start));
 
     while (stack.length) {
+      const currLoc = stack.pop();
       const neighbours = this.#getNeighbours(currLoc, visited);
-      const neighbour = neighbours[this.#randomInt(neighbours.length)];
 
-      if (
-        !visited.has([neighbour.floor, neighbour.row, neighbour.col].toString())
-      ) {
-        newLoc = neighbour;
-        this.#breakWall(currLoc, newLoc);
-        visited.add([neighbour.floor, neighbour.row, neighbour.col].toString());
-        stack.push(...neighbours);
-        currLoc = newLoc;
-      } else {
-        currLoc = stack.pop();
+      // DFS: elige vecinos aleatoriamente y sigue profundizando
+      for (const neighbour of this.#shuffleArray(neighbours)) {
+        const key = this.#cellKey(neighbour);
+        if (!visited.has(key)) {
+          this.#breakWall(currLoc, neighbour);
+          visited.add(key);
+          stack.push(neighbour);
+        }
       }
     }
     return maze;
   }
 
-  #pickRandomCell() {
-    const floor = this.#randomInt(this.maze.floors);
-    const row = this.#randomInt(this.maze.size);
-    const col = this.#randomInt(this.maze.size);
+  #cellKey(cell) {
+    return `${cell.floor},${cell.row},${cell.col}`;
+  }
+
+  #pickRandomCell(size, floors) {
+    const floor = this.#randomInt(floors);
+    const row = this.#randomInt(size);
+    const col = this.#randomInt(size);
 
     return this.maze.maze[floor][row][col];
   }
@@ -54,9 +60,19 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
   }
 
   /**
-   *
-   * @param {Maze3d} maze
+   * Shuffle array (Fisher-Yates)
+   */
+  #shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  /**
    * @param {Cell} cell
+   * @param {Set} visited
    */
   #getNeighbours(cell, visited) {
     const neighbours = [];
@@ -73,16 +89,16 @@ export default class DFSMaze3DGenerator extends Maze3DGenerator {
       const newFloor = cell.floor + direction[0];
       const newRow = cell.row + direction[1];
       const newCol = cell.col + direction[2];
-      //I doesn't enter to the if, never
       if (this.#isSafe(this.maze, newFloor, newRow, newCol)) {
-        if(!visited.has([newFloor, newRow, newCol])){
-          const neighbour = this.maze.maze[newFloor][newRow][newCol];
+        const neighbour = this.maze.maze[newFloor][newRow][newCol];
+        if (!visited.has(this.#cellKey(neighbour))) {
           neighbours.push(neighbour);
         }
       }
     }
     return neighbours;
   }
+
   /**
    * Checks whether the location is within
    * the boundaries of the maze

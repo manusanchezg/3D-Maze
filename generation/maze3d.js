@@ -34,6 +34,15 @@ export default class Maze3d {
     }
   }
 
+  setStart(start) {
+    this.s = start;
+    this.location = start;
+  }
+
+  setTarget(target) {
+    this.g = target;
+  }
+
   get maze() {
     return this.#maze;
   }

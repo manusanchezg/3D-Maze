@@ -1,36 +1,27 @@
 import DFSMaze3DGenerator from "./DFSMaze3DGenerator.js";
 import SimpleMaze3dGenerator from "./simpleMaze3dGenerator.js";
 import ABMaze3DGenerator from "./ABMaze3DGenerator.js";
-import Maze3d from "./maze3d.js";
-import Maze3DGenerator from "./maze3dGenerator.js";
 
-//! Maze Try
-// const maze = new Maze3d(5, 3)
-// const cell = maze.maze[2][4][1]
-// console.log(maze.getNeighbours(cell))
+/**
+ * Factory class to create different maze generators
+ * @class MazeFactory
+ * @static getMaze
+ * @param {string} algorithm - The algorithm to use ("DFS", "Simple", "AB")
+ * @returns {Maze3DGenerator} An instance of the requested maze generator
+ */
+export default class MazeFactory {
+  static getMaze(algorithm, size, floors) {
+    switch (algorithm) {
+        case "DFS":
+            return (new DFSMaze3DGenerator()).createMaze(size, floors);
+        case "Simple":
+            return new SimpleMaze3dGenerator().createMaze(size, floors);
+        case "AB":
+            return new ABMaze3DGenerator().createMaze(size, floors);
+        default:
+            throw new Error("Unknown algorithm");
+    }    
+  }
+}
 
-//! Simple Maze Generation
-// const maze = new SimpleMaze3dGenerator()
-// console.log(maze.generate());
-// maze.generate()
-// console.log(maze.createMaze());
-// console.log(maze.measureAlgorithmTime());
 
-//! DFS Maze Generation
-// const DFSMaze = new DFSMaze3DGenerator()
-// DFSMaze.generate()
-// console.log(DFSMaze.createMaze())
-// DFSMaze.measureAlgorithmTime()
-// console.log(DFSMaze.maze)
-
-//! AB Maze Generation
-// const ABMaze = new ABMaze3DGenerator()
-// ABMaze.generate()
-// console.log(ABMaze.createMaze())
-
-//! BFS Search Algorithm
-const DFSMaze = new DFSMaze3DGenerator()
-DFSMaze.generate(10, 4)
-const maze = DFSMaze.createMaze()
-
-export { maze }

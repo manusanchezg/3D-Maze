@@ -5,11 +5,15 @@ import Maze3DGenerator from "./maze3dGenerator.js";
  * then shuffles the moves to the one
  */
 export default class SimpleMaze3dGenerator extends Maze3DGenerator {
-  createMaze() {
+  createMaze(size, floors) {
+    let maze = this.generate(size, floors);
+
     const start = this.#pickRandomCell();
     const target = this.#pickRandomCell();
 
-    let maze = this.generate(this.maze.size, this.maze.floors, start, target);
+    maze.setStart(start);
+    maze.setTarget(target);
+
     let steps = [];
     let currLoc = start;
     let newLoc = maze.location;

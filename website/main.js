@@ -1,23 +1,20 @@
-import DFSMaze3DGenerator from "../generation/DFSMaze3DGenerator.js";
-import ABMaze3DGenerator from "../generation/ABMaze3DGenerator.js";
-import SimpleMaze3dGenerator from "../generation/simpleMaze3dGenerator.js";
 import Player from "./script/player.js";
 import Board from "./script/board.js";
+import mazeFactory from "../../generation/createMaze.js";
 
 const queryString = location.search;
 const urlParams = new URLSearchParams(queryString);
 const floors = urlParams.get("floors");
 const size = urlParams.get("size");
 const username = urlParams.get("username")
+const mazeTypeParam = urlParams.get("mazeType");
+const maze = mazeFactory.getMaze(mazeTypeParam, size, floors);
+const initialLocation = maze.s;
+console.log(initialLocation)
 
-const DFSMaze = new ABMaze3DGenerator();
-// const DFSMaze = new DFSMaze3DGenerator();
-// const DFSMaze = new SimpleMaze3dGenerator();
-DFSMaze.generate(size, floors);
-const maze = DFSMaze.createMaze();
 localStorage.setItem(username, JSON.stringify(maze))
 
-const player = new Player(maze);
+const player = new Player(maze.location);
 const board = new Board(maze, player);
 
 board.displayMaze(maze.location.floor);
@@ -27,8 +24,6 @@ const buttons = document.getElementById("buttons");
 
 
 buttons.addEventListener("click", (e) => {
-  // Position 1 of value direction I intent to move
-  // Position 2, 3 and 4 of value changing the location of player
   const currentDirections = new Map([
     [
       "floorUpButton",
@@ -57,10 +52,16 @@ buttons.addEventListener("click", (e) => {
   ]);
 
   const direction = currentDirections.get(e.target.id);
-  const currentCell = maze.maze[player.floor][player.row][player.col];
-  if (board.canMove(direction[0]))
+  if (board.canMove(direction[0])) {
     board.updatePlayersLocation(maze, direction[1], direction[2], direction[3], e.target.id);
-  else alert("You can't move that way because there is a wall!");
+
+    // Verifica si el jugador llegó al goal
+    if (board.isGameOver()) {
+      window.location.href = "win.html"; // Redirige a la página de victoria
+    }
+  } else {
+    alert("You can't move that way because there is a wall!");
+  }
 });
 
 

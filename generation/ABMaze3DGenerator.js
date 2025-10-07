@@ -6,12 +6,13 @@ import Maze3DGenerator from "./maze3dGenerator.js";
  * A 3D Maze Generator using the Aldous-Broder Algorithm
  */
 export default class ABMaze3DGenerator extends Maze3DGenerator {
-  createMaze() {
+  createMaze(size, floors) {
+    const maze = this.generate(size, floors);
     const start = this.#pickRandomCell();
     const target = this.#pickRandomCell();
-    const maze = this.generate(this.maze.size, this.maze.floors, start, target);
-    maze.maze[start.floor][start.row][start.col] = start
-    // console.log(start)
+    maze.setStart(start);
+    maze.setTarget(target);
+
     const DIRECTIONS = [
       [0, 0, 1],
       [0, 0, -1],
@@ -26,7 +27,7 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
     for (let i = 0; i < maze.floors; i++) {
       for (let j = 0; j < maze.size; j++) {
         for (let k = 0; k < maze.size; k++) {
-          cells.add([i, j, k].toString());
+          cells.add(this.#cellKey(i, j, k));
         }
       }
     }
@@ -35,38 +36,34 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
     let neighbour;
 
     let visited = new Set();
-    visited.add([randomCell.floor, randomCell.row, randomCell.col].toString());
-    cells.delete([randomCell.floor, randomCell.row, randomCell.col].toString());
+    visited.add(this.#cellKey(randomCell.floor, randomCell.row, randomCell.col));
+    cells.delete(this.#cellKey(randomCell.floor, randomCell.row, randomCell.col));
 
     // While cells has an element, it'll choose a random neighbour
     // check if it's not visited, and then added to visited and delete it from cells
     while (cells.size) {
       const randomDir = DIRECTIONS[this.#randomInt(DIRECTIONS.length)];
-      // console.log(randomCell, randomDir);
       const newFloor = randomCell.floor + randomDir[0];
       const newRow = randomCell.row + randomDir[1];
       const newCol = randomCell.col + randomDir[2];
 
       if (this.#isSafe(maze, newFloor, newRow, newCol)) {
         neighbour = maze.maze[newFloor][newRow][newCol];
-        if (
-          !visited.has(
-            [neighbour.floor, neighbour.row, neighbour.col].toString()
-          )
-        ) {
+        const neighbourKey = this.#cellKey(neighbour.floor, neighbour.row, neighbour.col);
+        if (!visited.has(neighbourKey)) {
           this.#breakWall(randomCell, neighbour);
-          visited.add(
-            [neighbour.floor, neighbour.row, neighbour.col].toString()
-          );
-          cells.delete(
-            [neighbour.floor, neighbour.row, neighbour.col].toString()
-          );
+          visited.add(neighbourKey);
+          cells.delete(neighbourKey);
         }
         randomCell = neighbour; // Solo actualiza si neighbour es válido
       }
       // Si no es seguro, randomCell no cambia
     }
     return maze;
+  }
+
+  #cellKey(floor, row, col) {
+    return `${floor},${row},${col}`;
   }
 
   #pickRandomCell() {
@@ -79,7 +76,7 @@ export default class ABMaze3DGenerator extends Maze3DGenerator {
 
   /**
    * @param {number} range
-   * @returns a random integer between [0, range + 1)
+   * @returns a random integer between [0, range)
    */
   #randomInt(range) {
     return Math.floor(Math.random() * range);

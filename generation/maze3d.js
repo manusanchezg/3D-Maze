@@ -17,6 +17,9 @@ export default class Maze3d {
     this.s = s;
     this.g = g;
     this.location = s;
+    this.moves = new Map(
+      this.s
+    ) // To record the moves of the player;
 
     this.#maze = new Array(floors);
 

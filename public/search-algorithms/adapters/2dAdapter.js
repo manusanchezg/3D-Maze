@@ -1,4 +1,4 @@
-import Node from "./../node.js";
+import Node from "../node.js";
 
 //This class converts the 2D array into a node tree
 

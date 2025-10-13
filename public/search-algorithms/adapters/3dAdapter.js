@@ -1,4 +1,4 @@
-import Node from "./../node.js";
+import Node from "../node.js";
 
 //This class converts a 3d Array in a node tree.
 

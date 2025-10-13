@@ -1,5 +1,5 @@
-import Player from "./script/player.js";
-import Board from "./script/board.js";
+import Player from "../script/player.js";
+import Board from "../script/board.js";
 import mazeFactory from "../../generation/createMaze.js";
 import BreadthFirstSearch from "../search-algorithms/breadth-first-search.js";
 

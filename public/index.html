@@ -62,11 +62,13 @@
   <button id="checkLocalStortage" type="button">Start Game!</button>
     </section>
     <div id="modal">
-      <button id="closeModal" type="button">X</button>
-      <div>
+      <div class="card">
+        <button id="closeModal" type="button">X</button>
         <h2>You have a previous game, do you want to keep playing?</h2>
-        <button type="button" id="startGame">New Game</button>
-        <button type="button" id="keepPlaying">Keep Playing</button>
+        <div class="actions">
+          <button type="button" id="startGame">New Game</button>
+          <button type="button" id="keepPlaying" class="primary">Keep Playing</button>
+        </div>
       </div>
     </div>
     <script src="script/landing.js"></script>

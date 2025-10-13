@@ -1,6 +1,7 @@
 import Player from "./script/player.js";
 import Board from "./script/board.js";
 import mazeFactory from "../../generation/createMaze.js";
+import BreadthFirstSearch from "../search-algorithms/breadth-first-search.js";
 
 const queryString = location.search;
 const urlParams = new URLSearchParams(queryString);
@@ -71,4 +72,62 @@ resetBtn.addEventListener("click", () => {
   const s = maze.s
   const start = document.getElementById(`${s.floor}${s.row}${s.col}`)
   start.appendChild(player.player)
+})
+
+function disableControls() {
+  // disable all interactive form controls and buttons to avoid conflicts
+  document.querySelectorAll('button, input, select, textarea').forEach(el => {
+    el.disabled = true;
+  });
+}
+
+function enableControls() {
+  document.querySelectorAll('button, input, select, textarea').forEach(el => {
+    el.disabled = false;
+  });
+}
+
+const solveBtn = document.getElementById("solveMaze")
+
+solveBtn.addEventListener("click", () => {
+  const path = BreadthFirstSearch.searchPath(maze);
+  if (path) {
+    // prevent user input while the animation runs
+    disableControls();
+
+    let delay = 0;
+    // start from player's current location (should match path[0])
+    let prev = [player.floor, player.row, player.col];
+    for (let i = 1; i < path.length; i++) {
+      const [f, r, c] = path[i].split(',').map(Number);
+
+      const directionId = (() => {
+        const [pf, pr, pc] = prev;
+        if (f > pf) return 'floorUpButton';
+        if (f < pf) return 'floorDownButton';
+        if (r < pr) return 'forwardButton';
+        if (r > pr) return 'backwardButton';
+        if (c > pc) return 'rightButton';
+        if (c < pc) return 'leftButton';
+        return null;
+      })();
+
+      setTimeout(() => {
+        board.updatePlayersLocation(maze, f, r, c, directionId);
+        // If we've reached the goal, go to win page
+        if (board.isGameOver()) {
+          window.location.href = "win.html";
+        }
+      }, delay);
+
+      // update prev for next iteration
+      prev = [f, r, c];
+      delay += 500; // Ajusta el tiempo de retraso entre movimientos (en milisegundos)
+    }
+
+    // re-enable controls after animation completes (extra 100ms buffer)
+    setTimeout(() => {
+      enableControls();
+    }, delay + 100);
+  }
 })

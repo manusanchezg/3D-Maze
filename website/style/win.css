@@ -1,92 +1,119 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap");
+
+:root {
+  --bg: #f6f7fb;
+  --card: #fff;
+  --accent: #0f1724;
+  --muted: #6b7280;
+  --glass: rgba(15, 23, 36, 0.06);
+  --radius: 14px
+}
+
+* {
+  box-sizing: border-box
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0
+}
 
 body {
-  height: 97vh;
-  margin: 0;
-  background: linear-gradient(0deg,
-    rgba(186, 159, 191, 1) 6%,
-    rgba(151, 114, 156, 1) 92%);
-  color: #0d324d;
-  font-family: 'Rubik', Arial, Helvetica, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  padding: 1.5rem
 }
 
 .win-container {
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0px 0px 40px 10px rgba(0,0,0,0.15);
-  padding: 40px 60px;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 40px var(--glass);
+  padding: 28px 36px;
   text-align: center;
-  position: relative;
-  z-index: 2;
+  max-width: 720px;
+  width: 100%
 }
 
 .animated-title {
-  font-family: "Roboto Slab", Georgia, serif;
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  color: #0d324d;
-  animation: bounce 1.2s infinite alternate;
+  font-size: 1.6rem;
+  margin: 0 0 .5rem 0;
+  color: var(--accent);
+  font-weight: 700;
+  animation: bounce 1.2s infinite alternate
 }
 
 @keyframes bounce {
-  0% { transform: scale(1) translateY(0);}
-  100% { transform: scale(1.07) translateY(-12px);}
+  0% {
+    transform: translateY(0)
+  }
+
+  100% {
+    transform: translateY(-8px)
+  }
 }
 
 .animated-text {
-  font-size: 1.3rem;
-  margin-bottom: 30px;
-  animation: fadeIn 2s;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px);}
-  to { opacity: 1; transform: translateY(0);}
+  color: var(--muted);
+  font-size: 1rem;
+  margin: 0 0 1rem 0
 }
 
 .win-btn {
   display: inline-block;
-  background-color: transparent;
-  border: 3px solid #0d324d;
-  color: #0d324d;
-  padding: 12px 28px;
-  border-radius: 15px;
-  font-size: 1.1rem;
-  cursor: pointer;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
   text-decoration: none;
-  transition: 0.2s ease-out;
+  font-weight: 600
 }
 
 .win-btn:hover {
-  background-color: #0d324d;
-  color: #fff;
-  transform: scale(1.07);
+  filter: brightness(.95)
 }
 
-/* Emojis volando */
+/* Emojis container (lighter) */
 #emoji-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   pointer-events: none;
-  z-index: 1;
+  overflow: hidden
 }
 
 .flying-emoji {
   position: absolute;
   top: 100vh;
-  font-size: 2.2rem;
-  opacity: 0.85;
-  animation: flyUp linear forwards;
+  font-size: 1.8rem;
+  opacity: .9;
+  animation: flyUp linear forwards
 }
 
 @keyframes flyUp {
-  from { top: 100vh; opacity: 0.85; }
-  to { top: -60px; opacity: 0.2; }
+  from {
+    top: 100vh;
+    opacity: .9
+  }
+
+  to {
+    top: -60px;
+    opacity: .2
+  }
+}
+
+@media (max-width:520px) {
+  .win-container {
+    padding: 18px 16px
+  }
+
+  .animated-title {
+    font-size: 1.25rem
+  }
+
+  .animated-text {
+    font-size: .95rem
+  }
 }

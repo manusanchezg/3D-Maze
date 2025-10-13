@@ -16,7 +16,6 @@ export default class Maze3d {
     this.size = size;
     this.s = s;
     this.g = g;
-    this.location = s;
 
     this.#maze = new Array(floors);
 
@@ -36,7 +35,8 @@ export default class Maze3d {
 
   setStart(start) {
     this.s = start;
-    this.location = start;
+    // copy start into location so they are independent objects
+    this.location = { floor: start.floor, row: start.row, col: start.col };
   }
 
   setTarget(target) {

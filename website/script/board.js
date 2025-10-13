@@ -20,25 +20,34 @@ export default class Board {
     const title = document.getElementById("title");
     title.textContent = `You're in the ${floorLocation + 1}° floor`;
 
+    // Clear previous render
+    this.container.innerHTML = '';
+
+    // Compute a reasonable cell size so the grid stays compact and square
+    const maxAllowed = 520; // pixels for the board area
+    const cellSize = Math.max(20, Math.floor(maxAllowed / this.maze.size));
+    // Set CSS grid to have size x size cells
+    this.container.style.display = 'grid';
+    this.container.style.gridTemplateColumns = `repeat(${this.maze.size}, ${cellSize}px)`;
+    this.container.style.gridAutoRows = `${cellSize}px`;
+
     for (let j = 0; j < this.maze.size; j++) {
       for (let k = 0; k < this.maze.size; k++) {
         const mazeCell = this.maze.maze[floorLocation][j][k];
         const cell = document.createElement("div");
-        cell.className = "cell";
+  cell.className = "cell";
         cell.id = `${floorLocation}${j}${k}`
 
         if (!mazeCell.walls[0]) cell.textContent = upArrow;
         if (!mazeCell.walls[1]) cell.textContent = downArrow;
         if (!mazeCell.walls[0] && !mazeCell.walls[1])
           cell.textContent = upDownArrow;
-        if (mazeCell.walls[2]) cell.style.borderTop = "4px solid #0D324D";
-        if (mazeCell.walls[3]) cell.style.borderRight = "4px solid #0D324D";
-        if (mazeCell.walls[4]) cell.style.borderBottom = "4px solid #0D324D";
-        if (mazeCell.walls[5]) cell.style.borderLeft = "4px solid #0D324D";
-        if (!mazeCell.walls[2]) cell.style.paddingTop = "4px";
-        if (!mazeCell.walls[3]) cell.style.paddingRight = "4px";
-        if (!mazeCell.walls[4]) cell.style.paddingBottom = "4px";
-        if (!mazeCell.walls[5]) cell.style.paddingLeft = "4px";
+  // Draw thicker borders where walls exist; otherwise leave thin border
+  if (mazeCell.walls[2]) cell.style.borderTop = "4px solid #0D324D";
+  if (mazeCell.walls[3]) cell.style.borderRight = "4px solid #0D324D";
+  if (mazeCell.walls[4]) cell.style.borderBottom = "4px solid #0D324D";
+  if (mazeCell.walls[5]) cell.style.borderLeft = "4px solid #0D324D";
+  // Remove padding adjustments — cells are fixed size so walls are used instead
         if (
           mazeCell.floor === this.maze.s.floor &&
           mazeCell.row === this.maze.s.row &&
@@ -60,7 +69,6 @@ export default class Board {
         this.container.appendChild(cell);
       }
     }
-    this.container.style.maxWidth = 58 * this.maze.size + "px";
   }
 /**
  * 
@@ -78,8 +86,6 @@ export default class Board {
 
     // Luego actualiza la posición del jugador
     this.player.changePlayerLocation(floor, row, col);
-    console.log('players location: ',this.player.location);
-
     let newLoc = document.getElementById(`${floor}${row}${col}`);
 
     // Si el jugador se mueve a un piso diferente, redibuja el laberinto

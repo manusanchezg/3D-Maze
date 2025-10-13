@@ -11,9 +11,15 @@ const username = urlParams.get("username")
 const mazeTypeParam = urlParams.get("mazeType");
 const maze = mazeFactory.getMaze(mazeTypeParam, size, floors);
 const initialLocation = maze.s;
-console.log(initialLocation)
 
-localStorage.setItem(username, JSON.stringify(maze))
+const storageKey = username ? `maze3d_${username}` : null;
+if (storageKey) {
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(maze));
+  } catch (e) {
+    console.warn('Could not save maze to localStorage:', e);
+  }
+}
 
 const player = new Player(maze.location);
 const board = new Board(maze, player);
@@ -58,6 +64,12 @@ buttons.addEventListener("click", (e) => {
 
     // Verifica si el jugador llegó al goal
     if (board.isGameOver()) {
+      // Remove saved game so the user won't continue it again
+      try {
+        if (storageKey) localStorage.removeItem(storageKey);
+      } catch (e) {
+        console.warn('Could not remove saved game from localStorage:', e);
+      }
       window.location.href = "win.html"; // Redirige a la página de victoria
     }
   } else {
@@ -80,13 +92,7 @@ function disableControls() {
     el.disabled = true;
   });
 }
-
-function enableControls() {
-  document.querySelectorAll('button, input, select, textarea').forEach(el => {
-    el.disabled = false;
-  });
-}
-
+ 
 const solveBtn = document.getElementById("solveMaze")
 
 solveBtn.addEventListener("click", () => {
@@ -114,8 +120,13 @@ solveBtn.addEventListener("click", () => {
 
       setTimeout(() => {
         board.updatePlayersLocation(maze, f, r, c, directionId);
-        // If we've reached the goal, go to win page
+        // If we've reached the goal, remove saved game and go to win page
         if (board.isGameOver()) {
+          try {
+            if (storageKey) localStorage.removeItem(storageKey);
+          } catch (e) {
+            console.warn('Could not remove saved game from localStorage:', e);
+          }
           window.location.href = "win.html";
         }
       }, delay);

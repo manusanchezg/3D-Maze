@@ -9,7 +9,6 @@ class BreadthFirstSearch extends Searchable {
         // Ensure there's a `moves` Map for the adapters. If the existing
         // code (generation/website) didn't provide it, build it from the
         // maze cell walls so the adapters can work without modifying older code.
-        // console.log("game: ",game.moves);
         if (!game.moves) {
             game.moves = buildMovesMap(game.maze);
         }

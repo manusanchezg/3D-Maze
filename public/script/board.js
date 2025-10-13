@@ -1,4 +1,4 @@
-import Maze3d from "../../generation/maze3d.js";
+import Maze3d from "../generation/maze3d.js";
 import Player from "./player.js";
 
 export default class Board {

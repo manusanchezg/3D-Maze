@@ -1,7 +1,7 @@
-import Player from "../script/player.js";
-import Board from "../script/board.js";
-import mazeFactory from "../../generation/createMaze.js";
-import BreadthFirstSearch from "../search-algorithms/breadth-first-search.js";
+import Player from "./script/player.js";
+import Board from "./script/board.js";
+import mazeFactory from "./generation/createMaze.js";
+import BreadthFirstSearch from "./search-algorithms/breadth-first-search.js";
 
 const queryString = location.search;
 const urlParams = new URLSearchParams(queryString);

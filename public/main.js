@@ -10,7 +10,6 @@ const size = urlParams.get("size");
 const username = urlParams.get("username")
 const mazeTypeParam = urlParams.get("mazeType");
 const maze = mazeFactory.getMaze(mazeTypeParam, size, floors);
-const initialLocation = maze.s;
 
 const storageKey = username ? `maze3d_${username}` : null;
 if (storageKey) {
@@ -82,8 +81,9 @@ const resetBtn = document.getElementById("resetLocation")
 
 resetBtn.addEventListener("click", () => {
   const s = maze.s
-  const start = document.getElementById(`${s.floor}${s.row}${s.col}`)
-  start.appendChild(player.player)
+  const start = document.getElementById(`${s.floor}${s.row}${s.col}`);
+  board.updatePlayersLocation(maze, s.floor, s.row, s.col);
+  start.appendChild(player.player);
 })
 
 function disableControls() {

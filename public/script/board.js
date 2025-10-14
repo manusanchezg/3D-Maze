@@ -3,8 +3,8 @@ import Player from "./player.js";
 
 export default class Board {
   /**
-   * @param {Maze3d} maze 
-   * @param {Player} player 
+   * @param {Maze3d} maze
+   * @param {Player} player
    */
   constructor(maze, player) {
     this.container = document.getElementById("container");
@@ -21,33 +21,44 @@ export default class Board {
     title.textContent = `You're in the ${floorLocation + 1}° floor`;
 
     // Clear previous render
-    this.container.innerHTML = '';
+    this.container.innerHTML = "";
 
-    // Compute a reasonable cell size so the grid stays compact and square
-    const maxAllowed = 520; // pixels for the board area
-    const cellSize = Math.max(20, Math.floor(maxAllowed / this.maze.size));
-    // Set CSS grid to have size x size cells
-    this.container.style.display = 'grid';
+    // Calculate cell size based on container dimensions
+    const containerRect = this.container.getBoundingClientRect();
+    const containerPadding = 32; // 1rem * 2 (top + bottom padding)
+    const availableHeight = containerRect.height - containerPadding;
+    const availableWidth = containerRect.width - containerPadding;
+
+    // Use the smaller dimension to ensure the grid is square and fits
+    const cellSize = Math.floor(
+      Math.min(availableHeight, availableWidth) / this.maze.size
+    );
+
+    // Set CSS grid to have size x size cells that fill the container
+    this.container.style.display = "grid";
     this.container.style.gridTemplateColumns = `repeat(${this.maze.size}, ${cellSize}px)`;
     this.container.style.gridAutoRows = `${cellSize}px`;
+    this.container.style.gap = "0px";
+    this.container.style.justifyContent = "center";
+    this.container.style.alignContent = "center";
 
     for (let j = 0; j < this.maze.size; j++) {
       for (let k = 0; k < this.maze.size; k++) {
         const mazeCell = this.maze.maze[floorLocation][j][k];
         const cell = document.createElement("div");
-  cell.className = "cell";
-        cell.id = `${floorLocation}${j}${k}`
+        cell.className = "cell";
+        cell.id = `${floorLocation}${j}${k}`;
 
         if (!mazeCell.walls[0]) cell.textContent = upArrow;
         if (!mazeCell.walls[1]) cell.textContent = downArrow;
         if (!mazeCell.walls[0] && !mazeCell.walls[1])
           cell.textContent = upDownArrow;
-  // Draw thicker borders where walls exist; otherwise leave thin border
-  if (mazeCell.walls[2]) cell.style.borderTop = "4px solid #0D324D";
-  if (mazeCell.walls[3]) cell.style.borderRight = "4px solid #0D324D";
-  if (mazeCell.walls[4]) cell.style.borderBottom = "4px solid #0D324D";
-  if (mazeCell.walls[5]) cell.style.borderLeft = "4px solid #0D324D";
-  // Remove padding adjustments — cells are fixed size so walls are used instead
+        // Draw thicker borders where walls exist; otherwise leave thin border
+        if (mazeCell.walls[2]) cell.style.borderTop = "4px solid #0D324D";
+        if (mazeCell.walls[3]) cell.style.borderRight = "4px solid #0D324D";
+        if (mazeCell.walls[4]) cell.style.borderBottom = "4px solid #0D324D";
+        if (mazeCell.walls[5]) cell.style.borderLeft = "4px solid #0D324D";
+        // Remove padding adjustments — cells are fixed size so walls are used instead
         if (
           mazeCell.floor === this.maze.s.floor &&
           mazeCell.row === this.maze.s.row &&
@@ -70,14 +81,14 @@ export default class Board {
       }
     }
   }
-/**
- * 
- * @param {Maze3d} maze 
- * @param {number} floor 
- * @param {number} row 
- * @param {number} col 
- * @param {string} direction 
- */
+  /**
+   *
+   * @param {Maze3d} maze
+   * @param {number} floor
+   * @param {number} row
+   * @param {number} col
+   * @param {string} direction
+   */
   updatePlayersLocation(maze, floor, row, col, direction) {
     // Actualiza primero la posición en el objeto maze
     maze.location.floor = floor;
@@ -100,7 +111,8 @@ export default class Board {
   }
 
   canMove(directionIndex) {
-    const cell = this.maze.maze[this.player.floor][this.player.row][this.player.col];
+    const cell =
+      this.maze.maze[this.player.floor][this.player.row][this.player.col];
     return !cell.walls[directionIndex];
   }
 

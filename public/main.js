@@ -2,6 +2,8 @@ import Player from "./script/player.js";
 import Board from "./script/board.js";
 import mazeFactory from "./generation/createMaze.js";
 import BreadthFirstSearch from "./search-algorithms/breadth-first-search.js";
+import DepthFirstSearch from "./search-algorithms/depth-first-search.js";
+import AStarSearch from "./search-algorithms/A_-search.js";
 
 const queryString = location.search;
 const urlParams = new URLSearchParams(queryString);
@@ -96,7 +98,9 @@ function disableControls() {
 const solveBtn = document.getElementById("solveMaze")
 
 solveBtn.addEventListener("click", () => {
-  const path = BreadthFirstSearch.searchPath(maze);
+  // const path = BreadthFirstSearch.searchPath(maze);
+  // const path = DepthFirstSearch.searchPath(maze);
+  const path = AStarSearch.searchPath(maze);
   if (path) {
     // prevent user input while the animation runs
     disableControls();

@@ -1,6 +1,7 @@
 import Searchable from "./searchable.js";
 import Adapter2D from "./adapters/2dAdapter.js";
 import Adapter3D from "./adapters/3dAdapter.js";
+import { buildMovesMap } from "./movesBuilder.js";
 
 class PriorityQueue {
     #heap
@@ -106,65 +107,170 @@ class PriorityQueue {
 
 class AStarSearch extends Searchable {
     static search(game, source = 'S', target = 'G') {
-        function ASearch(root, successor, goalTest, heuristic) {
-            const initialNode = root;
-
-            const priorQueue = new PriorityQueue();
-            priorQueue.push(root);
-
-            const explored = new Set();
-
+        // Ensure there's a `moves` Map for the adapters
+        if (!game.moves) {
+            game.moves = buildMovesMap(game.maze);
         }
 
-        function goalTest(node) {
-            if (node.value = 'G') {
-                return true;
+        function ASearch(root, goalKey, heuristic) {
+            // Priority queue for A* (min-heap based on f(n) = g(n) + h(n))
+            const priorQueue = new PriorityQueue((a, b) => a.f < b.f);
+            
+            // Add f, g, h values to the root node
+            root.g = 0;
+            root.h = heuristic(root);
+            root.f = root.g + root.h;
+            
+            priorQueue.push(root);
+            const explored = new Set();
+            const openSet = new Set([root.value]);
+
+            while (!priorQueue.isEmpty()) {
+                const currentNode = priorQueue.pop();
+                openSet.delete(currentNode.value);
+
+                if (currentNode.value === goalKey) {
+                    return explored.size;
+                }
+
+                explored.add(currentNode.value);
+
+                for (let i = 0; i < currentNode.children.length; i++) {
+                    const child = currentNode.children[i];
+                    
+                    if (explored.has(child.value)) {
+                        continue;
+                    }
+
+                    const tentativeG = currentNode.g + 1; // Assuming each move costs 1
+
+                    if (!openSet.has(child.value)) {
+                        child.g = tentativeG;
+                        child.h = heuristic(child);
+                        child.f = child.g + child.h;
+                        child.parent = currentNode;
+                        
+                        priorQueue.push(child);
+                        openSet.add(child.value);
+                    } else if (tentativeG < child.g) {
+                        child.g = tentativeG;
+                        child.f = child.g + child.h;
+                        child.parent = currentNode;
+                    }
+                }
             }
             return false;
         }
 
-        function successor(node) {
-            return [...node.children];
+        // Manhattan distance heuristic for 3D space
+        function manhattanHeuristic(goalPos) {
+            return function(node) {
+                const [nodeF, nodeR, nodeC] = node.value.split(',').map(Number);
+                const [goalF, goalR, goalC] = goalPos;
+                
+                return Math.abs(nodeF - goalF) + Math.abs(nodeR - goalR) + Math.abs(nodeC - goalC);
+            }
         }
 
-        function searchNode(problem, value) {
-            for (let i = 0; i < problem.length; i++) {
-                for (let j = 0; j < problem[0].length; j++) {
-                    for (let k = 0; k < problem[0][0].length; k++) {
-                        if (problem[i][j][k] === value) {
-                            return [i, j, k];
-                        }
+        // Build coordinate keys for start and goal (format 'f,r,c')
+        const startPos = [game.s.floor, game.s.row, game.s.col];
+        const goalPos = [game.g.floor, game.g.row, game.g.col];
+        const goalKey = `${game.g.floor},${game.g.row},${game.g.col}`;
+        const heuristic = manhattanHeuristic(goalPos);
+
+        if (game.maze.length === 1) {
+            const root = Adapter2D.adapt(game.maze, startPos, game.moves);
+            return ASearch(root, goalKey, heuristic);
+        } else if (game.maze.length > 1) {
+            const root = Adapter3D.adapt(game.maze, startPos, game.moves);
+            return ASearch(root, goalKey, heuristic);
+        }
+    }
+
+    // Return the path as an array of coordinate keys: ["f,r,c", ...] from start to goal.
+    static searchPath(game, source = 'S', target = 'G') {
+        if (!game.moves) {
+            game.moves = buildMovesMap(game.maze);
+        }
+
+        function ASearchWithPath(root, goalKey, heuristic) {
+            const priorQueue = new PriorityQueue((a, b) => a.f < b.f);
+            
+            root.g = 0;
+            root.h = heuristic(root);
+            root.f = root.g + root.h;
+            root.parent = null;
+            
+            priorQueue.push(root);
+            const explored = new Set();
+            const openSet = new Set([root.value]);
+
+            while (!priorQueue.isEmpty()) {
+                const currentNode = priorQueue.pop();
+                openSet.delete(currentNode.value);
+
+                if (currentNode.value === goalKey) {
+                    // Reconstruct path
+                    const path = [];
+                    let node = currentNode;
+                    while (node !== null) {
+                        path.push(node.value);
+                        node = node.parent;
+                    }
+                    path.reverse();
+                    return path;
+                }
+
+                explored.add(currentNode.value);
+
+                for (let i = 0; i < currentNode.children.length; i++) {
+                    const child = currentNode.children[i];
+                    
+                    if (explored.has(child.value)) {
+                        continue;
+                    }
+
+                    const tentativeG = currentNode.g + 1;
+
+                    if (!openSet.has(child.value)) {
+                        child.g = tentativeG;
+                        child.h = heuristic(child);
+                        child.f = child.g + child.h;
+                        child.parent = currentNode;
+                        
+                        priorQueue.push(child);
+                        openSet.add(child.value);
+                    } else if (tentativeG < child.g) {
+                        child.g = tentativeG;
+                        child.f = child.g + child.h;
+                        child.parent = currentNode;
                     }
                 }
             }
+            return null;
         }
 
-        function _heuristic(problem, goalPos) {
-            const saverProblem = problem;
-            const saveFinalNode = finalNode;
-
-            return function heuristic(node) {
-                const nodePosition = searchNode(problem, node.value);
-    
-                const xDiference = nodePosition[0] > goalPos[0] ? nodePosition[0] - goalPos[0] : goalPos[0] - nodePosition[0];
-                const yDiference = nodePosition[1] > goalPos[1] ? nodePosition[1] - goalPos[1] : goalPos[1] - nodePosition[1];
-                const zDiference = nodePosition[2] > goalPos[2] ? nodePosition[2] - goalPos[2] : goalPos[2] - nodePosition[2];
-    
-                const maxDistance = problem.length * problem[0].length * problem[0][0].length;
-    
-                return maxDistance - xDiference - yDiference - zDiference;
+        function manhattanHeuristic(goalPos) {
+            return function(node) {
+                const [nodeF, nodeR, nodeC] = node.value.split(',').map(Number);
+                const [goalF, goalR, goalC] = goalPos;
+                
+                return Math.abs(nodeF - goalF) + Math.abs(nodeR - goalR) + Math.abs(nodeC - goalC);
             }
         }
 
-        const startNode = searchNode(game.maze, 'S');
-        const finalNode = searchNode(game.maze, 'G');
-        const useHeuristic = _heuristic(game.maze, finalNode);
-        //root, successor, goalTest, heuristic
+        const startPos = [game.s.floor, game.s.row, game.s.col];
+        const goalPos = [game.g.floor, game.g.row, game.g.col];
+        const goalKey = `${game.g.floor},${game.g.row},${game.g.col}`;
+        const heuristic = manhattanHeuristic(goalPos);
+
         if (game.maze.length === 1) {
-            return ASearch(Adapter2D.adapt(game.maze, startNode, game.moves), successor, goalTest, useHeuristic);
+            const root = Adapter2D.adapt(game.maze, startPos, game.moves);
+            return ASearchWithPath(root, goalKey, heuristic);
         } else if (game.maze.length > 1) {
-            return ASearch(Adapter3D.adapt(game.maze, startNode, game.moves), successor, goalTest, useHeuristic);
-        }     
+            const root = Adapter3D.adapt(game.maze, startPos, game.moves);
+            return ASearchWithPath(root, goalKey, heuristic);
+        }
     }
 
     constructor() {

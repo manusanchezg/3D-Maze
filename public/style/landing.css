@@ -197,13 +197,19 @@ input[type=number] {
 }
 
 /* responsive tweaks */
-@media (max-width:520px) {
+@media (max-width:570px) {
   body {
     padding: 1rem
   }
 
   #form-container {
     padding: 1rem
+  }
+
+  #form-container div {
+    gap: .5rem;
+    display: flex;
+    flex-direction: column;
   }
 
   .row {

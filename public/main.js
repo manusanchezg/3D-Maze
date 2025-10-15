@@ -49,7 +49,7 @@ function showHalfPulse(cell, dir) {
     const timeout = setTimeout(() => {
       if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
       resolve();
-    }, 420);
+    }, 250);
 
     // Fallback: if user navigates away, ensure cleanup
     overlay._cleanup = () => {
@@ -135,6 +135,27 @@ buttons.addEventListener("click", (e) => {
   handleMove(id);
   setTimeout(() => highlightButton(id, false), 150);
 });
+
+// Recompute maze layout when viewport size/orientation changes
+function debounce(fn, wait) {
+  let t = null;
+  return (...args) => {
+    if (t) clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+}
+
+const rerenderMaze = debounce(() => {
+  try {
+    // re-display current floor to recalc cell sizes based on container
+    board.displayMaze(player.floor);
+  } catch (e) {
+    // ignore if board/player not yet initialized
+  }
+}, 120);
+
+window.addEventListener('resize', rerenderMaze);
+window.addEventListener('orientationchange', rerenderMaze);
 
 // Keyboard support: Arrow keys + PageUp/PageDown
 // Highlight helper: applies a visible outline while the button is active

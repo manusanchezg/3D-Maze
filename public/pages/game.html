@@ -15,6 +15,7 @@
     <header>
       <h1 id="title"></h1>
       <div id="container"></div>
+      <button id="helpButton" class="help-btn" aria-haspopup="dialog" aria-controls="helpModal">Help</button>
     </header>
     <div class="buttons-container">
       <div id="buttons">
@@ -42,6 +43,69 @@
     </div>
 
     <script type="module" src="../main.js"></script>
+    <script type="module">
+      // Help modal behaviour
+      const helpBtn = document.getElementById('helpButton');
+      const modal = document.createElement('div');
+      modal.id = 'helpModal';
+      modal.className = 'modal hidden';
+      modal.setAttribute('role', 'dialog');
+      modal.setAttribute('aria-modal', 'true');
+      modal.setAttribute('aria-labelledby', 'helpModalTitle');
+      modal.innerHTML = `
+        <div class="modal-overlay" data-close>
+          <div class="modal-dialog" role="document">
+            <header class="modal-header">
+              <h2 id="helpModalTitle">How to play</h2>
+              <button class="modal-close" aria-label="Close help">×</button>
+            </header>
+            <div class="modal-body">
+              <p>Use the controls to move your player through the 3D maze. Controls supported:</p>
+              <ul>
+                <li><strong>Keyboard:</strong> Arrow keys or W/A/S/D to move on the current floor. Hold a key to repeat moves.</li>
+                <li><strong>Change floors:</strong> PageUp or "R" to go up a floor; PageDown or "F" to go down a floor.</li>
+                <li><strong>On-screen buttons:</strong> Use the arrow and floor buttons at the right side for click/tap controls.</li>
+                <li><strong>Touch (mobile):</strong> Swipe left/right/up/down to move. If you tap your current cell, tapping the top or bottom half will move you up or down when available.</li>
+                <li><strong>Other:</strong> Use the <em>Reset location</em> button to return to the start and <em>Solve maze</em> to auto-solve (animation plays).</li>
+              </ul>
+              <p class="muted">Press <kbd>Esc</kbd> or click outside this box to close.</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      const overlay = modal.querySelector('.modal-overlay');
+      const closeBtn = modal.querySelector('.modal-close');
+
+      let lastActive = null;
+
+      function openModal() {
+        lastActive = document.activeElement;
+        modal.classList.remove('hidden');
+        // small timeout so focusable elements are available
+        setTimeout(() => closeBtn.focus(), 10);
+        document.addEventListener('keydown', onKeyDown);
+      }
+
+      function closeModal() {
+        modal.classList.add('hidden');
+        document.removeEventListener('keydown', onKeyDown);
+        if (lastActive && typeof lastActive.focus === 'function') lastActive.focus();
+      }
+
+      function onKeyDown(e) {
+        if (e.key === 'Escape') closeModal();
+      }
+
+      helpBtn.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', (e) => {
+        // close when clicking overlay but not when clicking inside the dialog
+        if (e.target && e.target === overlay) closeModal();
+      });
+    </script>
   </div>
 </body>
 

@@ -154,6 +154,51 @@ header {
   }
 }
 
+/* Hide the on-screen move buttons when device is in portrait orientation
+   (mobile / tablet vertical). Keep them visible in landscape. */
+@media (orientation: portrait) and (max-width: 1024px) {
+  /* hide the button grid but keep the container so other controls remain */
+  #buttons { display: none !important; }
+
+  /* Stack maze and controls vertically so reset/solve appear below the maze */
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+
+  /* Make the maze container use most of the viewport width and avoid overflow */
+  #container {
+    /* keep a square area so the grid can compute correctly */
+    width: min(96vw, 960px);
+    aspect-ratio: 1 / 1;
+    max-height: 78vh;
+    padding: 0.5rem;
+    overflow: auto;
+  }
+
+  .buttons-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.25rem;
+  }
+
+  /* Make reset/solve buttons full-width but limited to a sensible max-width */
+  #resetLocation, #solveMaze {
+    width: min(360px, 90%);
+    display: block;
+  }
+}
+
+/* Ensure on-screen buttons are visible on landscape mobile/tablet */
+@media (orientation: landscape) and (max-width: 1024px) {
+  #buttons { display: grid; }
+}
+
 /* Pulse overlays for touch feedback (moved from main.js) */
 .pulse-overlay {
   position: absolute;
@@ -182,4 +227,75 @@ header {
   0% { opacity: 0.0; transform: scale(0.85) translateY(0); }
   25% { opacity: 0.95; transform: scale(1.02) translateY(-2px); }
   100% { opacity: 0; transform: scale(1.2) translateY(-6px); }
+}
+
+/* Help modal styles */
+.help-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: transparent;
+  border: 1px solid var(--cell-border);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.help-btn:focus { outline: 3px solid #ffd54f; }
+
+.modal.hidden { display: none; }
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15,23,36,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-dialog {
+  background: var(--panel);
+  border-radius: 12px;
+  width: 640px;
+  max-width: 100%;
+  box-shadow: 0 12px 40px rgba(2,6,23,0.6);
+  color: var(--accent);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--cell-border);
+}
+
+.modal-body { padding: 1rem 1.25rem 1.5rem; line-height: 1.45; }
+.modal-body ul { margin: 0.5rem 0 0.75rem 1.2rem; }
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.modal-close:focus { outline: 3px solid #ffd54f; }
+.muted { color: var(--muted); font-size: 0.95rem; }
+
+@media (max-width:520px) {
+  .help-btn { top: 12px; right: 12px; padding: 0.4rem 0.6rem; }
+  .modal-dialog { width: 92%; }
 }

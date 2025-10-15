@@ -1,76 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="assets/favicon.svg" type="image/x-icon" />
-    <link rel="stylesheet" href="style/landing.css" />
-    <title>Maze 3D</title>
-  </head>
-  <body>
-    <section id="form-container">
-      <h1>Welcome to the 3D Maze game!</h1>
-        <div>
-          
-          <label for="userName">Your Name: </label>
-          <input
-          type="text"
-          required
-          placeholder="Your Name..."
-          id="userName"
-          pattern="[A-Za-z0-9\-_ ]+"
-          minlength="1"
-          maxlength="30"
-          title="Enter a non-empty name (letters, numbers, space, - or _)."
-          />
-        </div>
-        <div>
 
-          <label for="numOfFloors">Choose the number of floors:</label>
-          <input
-          type="number"
-          placeholder="Number of floors..."
-          id="numOfFloors"
-          value="3"
-          min="1"
-          step="1"
-          required
-          />
-        </div>
-      <div>
-        <label for="sizeOfMaze">Choose size of maze:</label>
-        <input
-          type="number"
-          placeholder="Size of maze..."
-          id="sizeOfMaze"
-          value="5"
-          min="2"
-          step="1"
-          required
-        />
-      </div>
-      <div>
-        <label for="mazeType">Maze generation algorithm:</label>
-        <select name="mazeType" id="mazeType" required>
-          <option value="" disabled selected>Choose generator</option>
-          <option value="DFS">DFS Maze Generator</option>
-          <option value="Simple">Simple Maze Generator</option>
-          <option value="AB">AB Maze Generator</option>
-        </select>
-      </div>
-  <button id="checkLocalStortage" type="button">Start Game!</button>
-    </section>
-    <div id="modal">
-      <div class="card">
-        <button id="closeModal" type="button">X</button>
-        <h2>You have a previous game, do you want to keep playing?</h2>
-        <div class="actions">
-          <button type="button" id="startGame">New Game</button>
-          <button type="button" id="keepPlaying" class="primary">Keep Playing</button>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="assets/favicon.svg" type="image/x-icon" />
+  <link rel="stylesheet" href="style/landing.css" />
+  <title>Maze 3D</title>
+</head>
+
+<body>
+  <section id="form-container">
+    <h1>Welcome to the 3D Maze game!</h1>
+    <div>
+      <label for="userName">Your Name: </label>
+      <input type="text" required placeholder="Your Name..." id="userName" pattern="[A-Za-z0-9\-_ ]+" minlength="1"
+        maxlength="30" title="Enter a non-empty name (letters, numbers, space, - or _)." />
+    </div>
+
+    <div>
+      <label for="numOfFloors">Choose the number of floors:</label>
+      <input type="number" placeholder="Number of floors..." id="numOfFloors" value="3" min="1" step="1" required />
+    </div>
+
+    <div>
+      <label for="sizeOfMaze">Choose size of maze:</label>
+      <input type="number" placeholder="Size of maze..." id="sizeOfMaze" value="5" min="2" step="1" required />
+    </div>
+
+    <div>
+      <label for="mazeType">Maze generation algorithm:</label>
+      <select name="mazeType" id="mazeType" required>
+        <option value="" disabled selected>Choose generator</option>
+        <option value="DFS">DFS Maze Generator</option>
+        <option value="Simple">Simple Maze Generator</option>
+        <option value="AB">AB Maze Generator</option>
+      </select>
+    </div>
+    
+    <button id="checkLocalStortage" type="button">Start Game!</button>
+  </section>
+  <div id="modal">
+    <div class="card">
+      <button id="closeModal" type="button">X</button>
+      <h2>You have a previous game, do you want to keep playing?</h2>
+      <div class="actions">
+        <button type="button" id="startGame">New Game</button>
+        <button type="button" id="keepPlaying" class="primary">Keep Playing</button>
       </div>
     </div>
-    <script src="./script/landing.js"></script>
-  </body>
+  </div>
+  <script src="./script/landing.js"></script>
+</body>
+
 </html>

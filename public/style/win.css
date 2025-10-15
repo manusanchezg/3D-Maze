@@ -106,14 +106,44 @@ body {
 
 @media (max-width:520px) {
   .win-container {
-    padding: 18px 16px
+    padding: 20px 18px;
+    width: 92vw;
+    max-width: 92vw;
+    max-height: 88vh;
+    overflow: auto;
+    border-radius: 12px;
   }
 
   .animated-title {
-    font-size: 1.25rem
+    font-size: 1.4rem;
   }
 
   .animated-text {
-    font-size: .95rem
+    font-size: 1rem;
+  }
+}
+
+/* Larger modal for small tablets as well */
+@media (min-width:521px) and (max-width:1024px) {
+  .win-container {
+    padding: 22px 20px;
+    width: 88vw;
+    max-width: 88vw;
+    height: 36vh;
+    overflow: auto;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .animated-title {
+    font-size: 1.45rem;
+    padding-bottom: 3rem;
+  }
+
+  .animated-text {
+    font-size: 1rem;
   }
 }

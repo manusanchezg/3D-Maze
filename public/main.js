@@ -5,6 +5,9 @@ import Maze3d from "./generation/maze3d.js";
 import BreadthFirstSearch from "./search-algorithms/breadth-first-search.js";
 import DepthFirstSearch from "./search-algorithms/depth-first-search.js";
 import AStarSearch from "./search-algorithms/A_-search.js";
+import { loadSavedMaze, saveMaze, clearSavedMaze } from "./script/storage.js";
+import { highlightButton, disableControls, enableControls, showHalfPulse, showFullPulse, removeFloorChooser } from "./script/uiHelpers.js";
+import { getDirectionMap, keyToDirectionId } from "./script/directionUtils.js";
 
 const queryString = location.search;
 const urlParams = new URLSearchParams(queryString);
@@ -16,36 +19,10 @@ const mazeTypeParam = urlParams.get("mazeType");
 const floorsNum = Number(floors);
 const sizeNum = Number(size);
 
-const storageKey = username ? `maze3d_${username}` : null;
-
-let maze = null;
-// If a username was provided, try to load a saved maze for that user.
-if (storageKey) {
-  try {
-    const raw = localStorage.getItem(storageKey);
-    if (raw) {
-        const parsed = JSON.parse(raw);
-        // If parsed seems like a saved maze (has .maze, .size, .floors), use it
-        if (parsed && parsed.maze && typeof parsed.size !== 'undefined' && typeof parsed.floors !== 'undefined') {
-          // Reconstruct Maze3d (and Cell instances) as a plain object with expected API
-          maze = Maze3d.fromJSON(parsed);
-        }
-      }
-  } catch (e) {
-    console.warn('Could not load saved maze from localStorage:', e);
-  }
-}
-
-// If we didn't get a saved maze, generate a new one and save it
-if (!maze) {
-  maze = mazeFactory.getMaze(mazeTypeParam, sizeNum, floorsNum);
-  if (storageKey) {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(maze));
-    } catch (e) {
-      console.warn('Could not save maze to localStorage:', e);
-    }
-  }
+const mazeFromStorage = loadSavedMaze(username);
+let maze = mazeFromStorage || mazeFactory.getMaze(mazeTypeParam, sizeNum, floorsNum);
+if (!mazeFromStorage) {
+  saveMaze(username, maze);
 }
 
 // Create player from maze.location. Some saved mazes may have location as plain object already.
@@ -54,102 +31,14 @@ const board = new Board(maze, player);
 
 board.displayMaze(maze.location.floor);
 
-// Helper to remove saved maze entries from localStorage for the current user.
-function clearSavedMaze() {
-  if (!storageKey) return;
-  try {
-    // Prefer removing the exact storageKey
-    localStorage.removeItem(storageKey);
-  } catch (e) {
-    console.warn('Could not remove saved game from localStorage:', e);
-  }
-  try {
-    // Also remove any fallback keys that include the username (landing.js may have saved variants)
-    const namePart = username || '';
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (!k) continue;
-      if (k.startsWith('maze3d_') && namePart && k.includes(namePart)) {
-        try { localStorage.removeItem(k); } catch (e) { /* ignore individual failures */ }
-      }
-    }
-  } catch (e) {
-    // ignore iteration errors
-  }
-}
-
-// Pulse styles are provided in style/style.css; overlays use classes.
-
 /**
  * Show a pulse animation in the given cell on either 'up' or 'down' half.
  * Returns a promise that resolves when the animation ends (approx 420ms).
  */
-function showHalfPulse(cell, dir) {
-  return new Promise((resolve) => {
-    if (!cell) return resolve();
-    // light haptic feedback on supported devices
-    try { if (navigator && typeof navigator.vibrate === 'function') navigator.vibrate(20); } catch (e) {}
-    // make sure cell is positioned relatively to host absolute children
-    if (getComputedStyle(cell).position === 'static') cell.style.position = 'relative';
-    const overlay = document.createElement('div');
-    overlay.className = `pulse-overlay pulse-half ${dir === 'up' ? 'pulse-up' : 'pulse-down'}`;
-    overlay.textContent = dir === 'up' ? '\u25B2' : '\u25BC';
-    cell.appendChild(overlay);
-
-    // Remove overlay after animation duration
-    const timeout = setTimeout(() => {
-      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      resolve();
-    }, 250);
-
-    // Fallback: if user navigates away, ensure cleanup
-    overlay._cleanup = () => {
-      clearTimeout(timeout);
-      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      resolve();
-    };
-  });
-}
-
-/**
- * Show a full-cell pulse (covers entire cell) with arrow up/down.
- * Returns a promise that resolves after the animation.
- */
-function showFullPulse(cell, dir) {
-  return new Promise((resolve) => {
-    // light haptic feedback on supported devices
-    try { if (navigator && typeof navigator.vibrate === 'function') navigator.vibrate(20); } catch (e) {}
-    if (!cell) return resolve();
-    if (getComputedStyle(cell).position === 'static') cell.style.position = 'relative';
-    const overlay = document.createElement('div');
-    overlay.className = `pulse-overlay pulse-full ${dir === 'up' ? 'pulse-up' : 'pulse-down'}`;
-    overlay.textContent = dir === 'up' ? '\u25B2' : '\u25BC';
-    cell.appendChild(overlay);
-
-    const timeout = setTimeout(() => {
-      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      resolve();
-    }, 420);
-
-    overlay._cleanup = () => {
-      clearTimeout(timeout);
-      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      resolve();
-    };
-  });
-}
+// pulses are provided by uiHelpers.js
 
 // returns a map of direction id -> [moveType, newFloor, newRow, newCol]
-function getDirectionMap(currentPlayer) {
-  return new Map([
-    ["floorUpButton", [0, currentPlayer.floor + 1, currentPlayer.row, currentPlayer.col]],
-    ["floorDownButton", [1, currentPlayer.floor - 1, currentPlayer.row, currentPlayer.col]],
-    ["forwardButton", [2, currentPlayer.floor, currentPlayer.row - 1, currentPlayer.col]],
-    ["rightButton", [3, currentPlayer.floor, currentPlayer.row, currentPlayer.col + 1]],
-    ["backwardButton", [4, currentPlayer.floor, currentPlayer.row + 1, currentPlayer.col]],
-    ["leftButton", [5, currentPlayer.floor, currentPlayer.row, currentPlayer.col - 1]],
-  ]);
-}
+// direction mapping moved to directionUtils.js
 
 function handleMove(directionId, { showAlert = false } = {}) {
   if (!directionId) return false;
@@ -162,7 +51,7 @@ function handleMove(directionId, { showAlert = false } = {}) {
 
     // Check if player reached goal
     if (board.isGameOver()) {
-      clearSavedMaze();
+      clearSavedMaze(username);
       window.location.href = "win.html";
     }
     return true;
@@ -206,56 +95,18 @@ window.addEventListener('orientationchange', rerenderMaze);
 
 // Keyboard support: Arrow keys + PageUp/PageDown
 // Highlight helper: applies a visible outline while the button is active
-function highlightButton(btnId, on) {
-  const el = document.getElementById(btnId);
-  if (!el) return;
-  if (on) {
-    // store previous inline outline so we can restore later
-    if (el.dataset._prevOutline === undefined) el.dataset._prevOutline = el.style.outline || '';
-    el.style.outline = '3px solid #ffd54f';
-    el.style.transition = 'outline 120ms';
-  } else {
-    el.style.outline = el.dataset._prevOutline || '';
-    delete el.dataset._prevOutline;
-  }
-}
+// highlightButton moved to uiHelpers.js
 
 // Map key event to direction id. Supports Arrow keys, PageUp/PageDown, WASD and R/F.
-function keyToDirectionId(e) {
-  const key = (e.key || '').toLowerCase();
-  switch (key) {
-    case 'arrowup':
-    case 'w':
-      return 'forwardButton';
-    case 'arrowdown':
-    case 's':
-      return 'backwardButton';
-    case 'arrowleft':
-    case 'a':
-      return 'leftButton';
-    case 'arrowright':
-    case 'd':
-      return 'rightButton';
-    case 'pageup':
-    case 'r':
-      return 'floorUpButton';
-    case 'pagedown':
-    case 'f':
-      return 'floorDownButton';
-    default:
-      return null;
-  }
-}
+// keyToDirectionId moved to directionUtils.js
 
-// Auto-repeat support when holding keys: track pressed keys and timers
-// Behavior: immediate move on keydown, then wait INITIAL_DELAY before
-// performing the first repeated move, after which repeat every REPEAT_DELAY.
+// keyboard auto-repeat and handlers remain in main.js but use keyToDirectionId
+
 const _pressedKeyState = new Map(); // key -> { dirId, timeoutId, intervalId }
 const INITIAL_DELAY = 500; // ms before first repeated move while holding
 const REPEAT_DELAY = 200; // ms between repeated moves after initial delay
 
 window.addEventListener('keydown', (e) => {
-  // ignore typing into inputs or textareas
   const active = document.activeElement;
   if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
 
@@ -263,23 +114,15 @@ window.addEventListener('keydown', (e) => {
   const dirId = keyToDirectionId(e);
   if (!dirId) return;
 
-  // prevent default behavior (page scroll for PageUp/PageDown)
   e.preventDefault();
-
-  // If this physical key is already pressed, ignore duplicate keydown events
   if (_pressedKeyState.has(rawKey)) return;
 
-  // First immediate move
   handleMove(dirId);
   highlightButton(dirId, true);
 
-  // Start a timeout that will perform the first repeated move after INITIAL_DELAY
-  // and then set an interval to continue repeating every REPEAT_DELAY.
   const timeoutId = setTimeout(() => {
-    // perform the first repeated move after initial delay
     const ok = handleMove(dirId);
     if (!ok) {
-      // blocked by wall: clear timeout, unhighlight and don't start interval
       const entry = _pressedKeyState.get(rawKey);
       if (entry) {
         highlightButton(entry.dirId, false);
@@ -287,11 +130,9 @@ window.addEventListener('keydown', (e) => {
       }
       return;
     }
-    // then start interval for continuous repeats
     const intervalId = setInterval(() => {
       const ok2 = handleMove(dirId);
       if (!ok2) {
-        // blocked: stop repeating and cleanup
         const entry2 = _pressedKeyState.get(rawKey);
         if (entry2) {
           if (entry2.intervalId) clearInterval(entry2.intervalId);
@@ -300,7 +141,6 @@ window.addEventListener('keydown', (e) => {
         }
       }
     }, REPEAT_DELAY);
-    // update stored state with the interval id
     const entry = _pressedKeyState.get(rawKey);
     if (entry) entry.intervalId = intervalId;
   }, INITIAL_DELAY);
@@ -312,7 +152,6 @@ window.addEventListener('keyup', (e) => {
   const rawKey = e.key || '';
   const state = _pressedKeyState.get(rawKey);
   if (!state) return;
-  // stop pending timeout and repeating interval
   if (state.timeoutId) clearTimeout(state.timeoutId);
   if (state.intervalId) clearInterval(state.intervalId);
   highlightButton(state.dirId, false);
@@ -372,11 +211,7 @@ window.addEventListener('touchend', (e) => {
   }
 });
 
-// Remove any existing overlay chooser
-function removeFloorChooser() {
-  const existing = document.getElementById('floor-chooser-overlay');
-  if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
-}
+// removeFloorChooser provided by uiHelpers.js
 
 function handleTapAt(clientX, clientY) {
   // Find element at touch point
@@ -449,12 +284,7 @@ resetBtn.addEventListener("click", () => {
   start.appendChild(player.player);
 })
 
-function disableControls() {
-  // disable all interactive form controls and buttons to avoid conflicts
-  document.querySelectorAll('button, input, select, textarea').forEach(el => {
-    el.disabled = true;
-  });
-}
+// disableControls provided by uiHelpers.js
  
 const solveBtn = document.getElementById("solveMaze")
 
@@ -487,7 +317,7 @@ solveBtn.addEventListener("click", () => {
         board.updatePlayersLocation(maze, f, r, c, directionId);
         // If we've reached the goal, remove saved game and go to win page
         if (board.isGameOver()) {
-          clearSavedMaze();
+          clearSavedMaze(username);
           window.location.href = "win.html";
         }
       }, delay);

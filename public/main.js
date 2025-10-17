@@ -1,6 +1,7 @@
 import Player from "./script/player.js";
 import Board from "./script/board.js";
 import mazeFactory from "./generation/createMaze.js";
+import Maze3d from "./generation/maze3d.js";
 import BreadthFirstSearch from "./search-algorithms/breadth-first-search.js";
 import DepthFirstSearch from "./search-algorithms/depth-first-search.js";
 import AStarSearch from "./search-algorithms/A_-search.js";
@@ -11,21 +12,71 @@ const floors = urlParams.get("floors");
 const size = urlParams.get("size");
 const username = urlParams.get("username")
 const mazeTypeParam = urlParams.get("mazeType");
-const maze = mazeFactory.getMaze(mazeTypeParam, size, floors);
+// Parse numeric parameters (URLSearchParams returns strings)
+const floorsNum = Number(floors);
+const sizeNum = Number(size);
 
 const storageKey = username ? `maze3d_${username}` : null;
+
+let maze = null;
+// If a username was provided, try to load a saved maze for that user.
 if (storageKey) {
   try {
-    localStorage.setItem(storageKey, JSON.stringify(maze));
+    const raw = localStorage.getItem(storageKey);
+    if (raw) {
+        const parsed = JSON.parse(raw);
+        // If parsed seems like a saved maze (has .maze, .size, .floors), use it
+        if (parsed && parsed.maze && typeof parsed.size !== 'undefined' && typeof parsed.floors !== 'undefined') {
+          // Reconstruct Maze3d (and Cell instances) as a plain object with expected API
+          maze = Maze3d.fromJSON(parsed);
+        }
+      }
   } catch (e) {
-    console.warn('Could not save maze to localStorage:', e);
+    console.warn('Could not load saved maze from localStorage:', e);
   }
 }
 
+// If we didn't get a saved maze, generate a new one and save it
+if (!maze) {
+  maze = mazeFactory.getMaze(mazeTypeParam, sizeNum, floorsNum);
+  if (storageKey) {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(maze));
+    } catch (e) {
+      console.warn('Could not save maze to localStorage:', e);
+    }
+  }
+}
+
+// Create player from maze.location. Some saved mazes may have location as plain object already.
 const player = new Player(maze.location);
 const board = new Board(maze, player);
 
 board.displayMaze(maze.location.floor);
+
+// Helper to remove saved maze entries from localStorage for the current user.
+function clearSavedMaze() {
+  if (!storageKey) return;
+  try {
+    // Prefer removing the exact storageKey
+    localStorage.removeItem(storageKey);
+  } catch (e) {
+    console.warn('Could not remove saved game from localStorage:', e);
+  }
+  try {
+    // Also remove any fallback keys that include the username (landing.js may have saved variants)
+    const namePart = username || '';
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      if (k.startsWith('maze3d_') && namePart && k.includes(namePart)) {
+        try { localStorage.removeItem(k); } catch (e) { /* ignore individual failures */ }
+      }
+    }
+  } catch (e) {
+    // ignore iteration errors
+  }
+}
 
 // Pulse styles are provided in style/style.css; overlays use classes.
 
@@ -111,11 +162,7 @@ function handleMove(directionId, { showAlert = false } = {}) {
 
     // Check if player reached goal
     if (board.isGameOver()) {
-      try {
-        if (storageKey) localStorage.removeItem(storageKey);
-      } catch (e) {
-        console.warn('Could not remove saved game from localStorage:', e);
-      }
+      clearSavedMaze();
       window.location.href = "win.html";
     }
     return true;
@@ -440,11 +487,7 @@ solveBtn.addEventListener("click", () => {
         board.updatePlayersLocation(maze, f, r, c, directionId);
         // If we've reached the goal, remove saved game and go to win page
         if (board.isGameOver()) {
-          try {
-            if (storageKey) localStorage.removeItem(storageKey);
-          } catch (e) {
-            console.warn('Could not remove saved game from localStorage:', e);
-          }
+          clearSavedMaze();
           window.location.href = "win.html";
         }
       }, delay);

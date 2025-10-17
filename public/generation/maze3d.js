@@ -57,10 +57,82 @@ export default class Maze3d {
 
   toJSON() {
     return {
-      maze : this.#maze,
-      floors : this.floors,
-      size : this.size,
+      maze: this.#maze,
+      floors: this.floors,
+      size: this.size,
+      s: this.s,
+      g: this.g,
+      location: this.location,
     }
+  }
+
+  /**
+   * Reconstruct a Maze3d instance from a plain object (parsed JSON)
+   * This will recreate Cell instances so methods are available if needed.
+   * @param {object} obj
+   * @returns {Maze3d}
+   */
+  static fromJSON(obj) {
+    if (!obj) return null;
+    const size = obj.size;
+    const floors = obj.floors;
+    // Create an empty Maze3d instance
+    const maze = new Maze3d(size, floors, obj.s || null, obj.g || null);
+
+    // Replace maze internal structure with reconstructed Cells
+    const reconstructed = new Array(floors);
+    for (let f = 0; f < floors; f++) {
+      reconstructed[f] = new Array(size);
+      for (let r = 0; r < size; r++) {
+        reconstructed[f][r] = new Array(size);
+        for (let c = 0; c < size; c++) {
+          const rawCell = obj.maze && obj.maze[f] && obj.maze[f][r] && obj.maze[f][r][c];
+          if (rawCell) {
+            // rawCell may already be a Cell-like object with .walls etc.
+            const walls = Array.isArray(rawCell.walls) ? rawCell.walls : rawCell["#walls"] || [true, true, true, true, true, true];
+            const floorIdx = typeof rawCell.floor === 'number' ? rawCell.floor : f;
+            const rowIdx = typeof rawCell.row === 'number' ? rawCell.row : r;
+            const colIdx = typeof rawCell.col === 'number' ? rawCell.col : c;
+            reconstructed[f][r][c] = new Cell(...walls, floorIdx, rowIdx, colIdx);
+            // If there were other properties on rawCell (rare), ignore them for now
+          } else {
+            reconstructed[f][r][c] = new Cell(true, true, true, true, true, true, f, r, c);
+          }
+        }
+      }
+    }
+
+    // Replace the private #maze field. There's no direct way to set a private field
+    // from here, but the constructor already created a #maze we can overwrite by
+    // assigning to the internal property via a brute-force approach: use Object.getOwnPropertyNames
+    // to find the private field key and set it. This is a fragile hack but works in environments
+    // where private fields are transpiled to symbols; however to avoid runtime fragility,
+    // we will instead set the public getter's backing by temporarily assigning via a closure.
+
+    // As a simpler safe approach, we'll create a new Maze3d-like plain object with the
+    // same public shape (not relying on private field mutation). Many parts of the app
+    // access .maze via the getter; to keep compatibility, we'll return an object that
+    // mimics the Maze3d public API.
+
+    const plain = {
+      maze: reconstructed,
+      floors: floors,
+      size: size,
+      s: obj.s,
+      g: obj.g,
+      location: obj.location || (obj.s ? { floor: obj.s.floor, row: obj.s.row, col: obj.s.col } : { floor: 0, row: 0, col: 0 }),
+      changeLocation(newFloor, newRow, newCol) {
+        this.location.floor = newFloor;
+        this.location.row = newRow;
+        this.location.col = newCol;
+        return this.location;
+      },
+      toJSON() {
+        return obj;
+      }
+    };
+
+    return plain;
   }
   /**
    * A console view of the maze

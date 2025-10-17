@@ -30,6 +30,16 @@ export default class Cell {
   breakWall(index) {
     this.walls[index] = false
   }
+
+  toJSON() {
+    // Explicitly expose the internal state needed to persist/restore a Cell
+    return {
+      walls: this.walls,
+      floor: this.floor,
+      row: this.row,
+      col: this.col,
+    };
+  }
 }
 
 // Is it better to pass the booleans of the walls as a parameter,

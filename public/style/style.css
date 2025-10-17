@@ -63,6 +63,9 @@ header {
   align-content: center;
   justify-self: center;
   padding: 1rem;
+  /* Prevent touch swipes inside the maze from scrolling the page */
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 .cell {
@@ -176,6 +179,11 @@ header {
     max-height: 78vh;
     padding: 0.5rem;
     overflow: auto;
+    /* For scrollable containers, contain overscroll so the viewport doesn't bounce */
+    overscroll-behavior: contain;
+    /* If you want to allow inner scrolling but still prevent page pan, leave touch-action as auto here.
+       touch-action: none above prevents panning gestures; if you need to allow internal scroll via touch,
+       change touch-action to 'pan-x pan-y' or remove it. */
   }
 
   .buttons-container {
